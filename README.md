@@ -6,7 +6,7 @@
 
 - [시스템 설계](docs/architecture/trading-system.md)
 - [구현 계획과 완료 조건](docs/plans/implementation.md)
-- [GitHub 기준 개발·재개 제안 — 승인 대기](docs/plans/github-execution-proposal.md)
+- [GitHub 기준 개발·재개 방식 — B 승인](docs/plans/github-execution-proposal.md)
 - [단계별 GitHub 작업 지도](docs/plans/project-roadmap.md)
 - [공식 자료 조사](docs/research/evidence.md)
 - [GitHub 운영](.github/project-management.md)

@@ -1,17 +1,19 @@
 # 개발 작업 지도
 
-2026-11-11 · 모든 단계는 계획 등록 상태이며 개발 승인은 아직 없다.
+2026-11-11 · execution-v1 B 방식 승인. 실제 단계 수용 여부는 단계 이슈에서 확인한다.
+
+[사용자 승인 전사](https://github.com/krdn/gon-stock/issues/4#issuecomment-6794757846).
 
 [실행 제안 execution-v1](github-execution-proposal.md) · [총괄 이슈 #4](https://github.com/krdn/gon-stock/issues/4) · [Project #19](https://github.com/users/krdn/projects/19)
 
 | 순서 | 단계 이슈 | 선행 단계 | 실행 허용 상태 |
 | --- | --- | --- | --- |
-| P0 | [설계 확정 #1](https://github.com/krdn/gon-stock/issues/1) | 사용자 실행 제안 승인 | 승인 대기·Fable 리뷰 미완료 |
-| P1 | [읽기 전용 연결 #5](https://github.com/krdn/gon-stock/issues/5) | P0 | 미승인 |
-| P2 | [저장·재생 #6](https://github.com/krdn/gon-stock/issues/6) | P1 | 미승인 |
-| P3 | [전략·확률 검증 #7](https://github.com/krdn/gon-stock/issues/7) | P2 | 미승인 |
-| P4 | [Buzz·최소 화면 #8](https://github.com/krdn/gon-stock/issues/8) | P3 | 미승인 |
-| P5 | [모의·관찰 #9](https://github.com/krdn/gon-stock/issues/9) | P4 | 미승인 |
+| P0 | [설계 확정 #1](https://github.com/krdn/gon-stock/issues/1) | 사용자 실행 제안 승인 | B 위임 승인·준비와 리뷰 지적 처리 중 |
+| P1 | [읽기 전용 연결 #5](https://github.com/krdn/gon-stock/issues/5) | P0 | B 위임 승인·선행 수용 대기 |
+| P2 | [저장·재생 #6](https://github.com/krdn/gon-stock/issues/6) | P1 | B 위임 승인·선행 수용 대기 |
+| P3 | [전략·확률 검증 #7](https://github.com/krdn/gon-stock/issues/7) | P2 | B 위임 승인·선행 수용 대기 |
+| P4 | [Buzz·최소 화면 #8](https://github.com/krdn/gon-stock/issues/8) | P3 | B 위임 승인·선행 수용 대기 |
+| P5 | [모의·관찰 #9](https://github.com/krdn/gon-stock/issues/9) | P4 | B 위임 승인·선행 수용 대기 |
 | P6 | [실전 준비 #10](https://github.com/krdn/gon-stock/issues/10) | P5 결과 수용 | 미승인 |
 | P7 | [제한 운용 #11](https://github.com/krdn/gon-stock/issues/11) | P6·별도 실거래 시작 결정 | 미승인 |
 
@@ -27,5 +29,8 @@
 - 최초 리뷰 입력 SHA-256: `4308c619cc254aa5e79556684ae76449c4cb8b82dd5478704e190438fb2b28e8`.
 - 이 파일 및 원격 작업 지도는 위 리뷰 이후 추가한 기록이며 외부 리뷰를 받지 않음.
 - 문서 PR은 사용자 검토를 위한 초안이다. CI·운영 실행기·거래 코드·Buzz 에이전트는 이번에 구현하지 않음.
+
+위 두 문장은 최초 제안 작성 시점 기록이다. 이후 로컬 Fable 5.2 리뷰 응답을 확인했고 CHANGES_REQUESTED에 따라 상태 표현을 수정했다.
+P0 준비 CI와 현재 리뷰 근거는 PR #13 및 단계 이슈 #1에 연결한다. 원격 프록시 실패 이력은 보존한다.
 
 공개 자료에는 계좌 금액·거래 원장·API 키·프록시 인증·비공개 데이터가 포함되지 않는다.
