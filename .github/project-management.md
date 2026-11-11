@@ -1,16 +1,16 @@
 # GitHub 운영 계획
 
 공개 저장소의 문서·이슈가 개발 기록의 기준이다. 거래 원장과 개인정보의 저장소로 사용하지 않는다.
-초기 상태는 모든 원격 기능 pending이며 실제 URL·권한을 조회한 뒤 상태를 갱신한다.
+저장소: https://github.com/krdn/gon-stock. 아래는 2026-11-11 확인 상태다.
 
 | 기능 | 용도 | 초기 상태 |
 | --- | --- | --- |
-| Code·PR | 설계·구현·리뷰·버전별 변경 | pending |
-| Issues·하위 이슈 | 단계별 수용 기준·버그·예측 실패 개선 | pending |
-| Projects | 단계, 상태, 우선순위, 차단 사유, 검증 근거 | pending |
+| Code·PR | 설계·구현·리뷰·버전별 변경 | 설계 초안 main 저장, 후속 변경은 PR |
+| Issues·하위 이슈 | 단계별 수용 기준·버그·예측 실패 개선 | P0 이슈 #1 생성, 하위 구현 이슈는 단계 확정 후 |
+| Projects | 단계, 상태, 우선순위, 차단 사유, 검증 근거 | krdn Project #19 생성·공개·repo 연결, #1 등록; 사용자 정의 필드는 pending |
 | Milestones·Labels | P0~P7 단계 묶음과 작업 분류 | pending |
-| Discussions | 전략 후보·반론·검증 결론, 확정 시 문서 연결 | pending |
-| Wiki | 설치·운영·복구 안내의 입구, 원문 docs 링크 | pending |
+| Discussions | 전략 후보·반론·검증 결론, 확정 시 문서 연결 | 설계 토론 #2 생성 |
+| Wiki | 설치·운영·복구 안내의 입구, 원문 docs 링크 | 기능 활성화; Wiki Git 조회 실패, 첫 페이지 미생성, docs로 대체 |
 | Actions | 문서·타입·테스트·재현 검증, 익명 보고서 | pending |
 | Releases·Tags | 검증된 버전·변경 내역·롤백 기준 | 구현 후 적용 |
 | Environments·Deployments | paper/live 분리와 배포 이력 | 배포 단계 적용 |
