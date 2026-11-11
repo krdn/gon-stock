@@ -90,7 +90,7 @@ def read_market_clock(operation: str, payload: dict) -> MarketClock:
                     if ny != local:
                         return MarketClock('inconsistent')
                 stamps.append(stamp)
-            except ValueError:
+            except (ValueError, OverflowError):
                 return MarketClock('invalid')
         latest = max(stamps)
         return MarketClock(

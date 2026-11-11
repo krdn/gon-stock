@@ -37,6 +37,24 @@ def test_us_bar_inconsistent_or_missing_local_clock_is_rejected():
         assert clock.event_time is None
 
 
+def test_us_bar_timezone_underflow_is_invalid_not_an_exception():
+    clock = read_market_clock(
+        'us_bars',
+        {
+            'output2': [
+                {
+                    'kymd': '00010101',
+                    'khms': '000000',
+                    'xymd': '00010101',
+                    'xhms': '000000',
+                }
+            ]
+        },
+    )
+    assert clock.status == 'invalid'
+    assert clock.event_time is None
+
+
 def test_bars_use_latest_dated_record_not_receive_date_or_array_order():
     clock = read_market_clock(
         'kr_bars',

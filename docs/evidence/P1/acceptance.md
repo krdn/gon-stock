@@ -61,7 +61,7 @@ FAIL이나 파일 부재이면 원인을 기록하며 이슈를 닫지 않는다
 해당 검토는 main `d6988e2`의 문서·근거 대조이며 이번 코드 변경의 리뷰를 대신하지 않는다.
 미국 분봉 명세의 한국기준 시각·현지 시각은 [공식 API](https://apiportal.koreainvestment.com/apiservice-apiservice?/uapi/overseas-price/v1/quotations/inquire-time-itemchartprice)를 따른다.
 
-이번 코드 변경의 로컬 검사: 91개 테스트·프로젝트 Ruff·빌드·문서 검사 PASS.
+이번 코드 변경의 로컬 검사: 92개 테스트·프로젝트 Ruff·빌드·문서 검사 PASS.
 최종 코드 리뷰는 Fable CLI의 5시간 한도로 실패했다. `is_error=true`, `modelUsage={}`이며 검토 결과가 없다.
 CLI가 안내한 초기화 시각은 2026-11-12 03:10 KST다. 같은 모델·effort로 03:12에 한 번 재시도하도록 준비한다.
 리뷰 입력·실행 소스는 hash로 고정하고, 결과가 있어도 자동 병합하지 않는다. PR은 리뷰 확인 전 초안으로 유지한다.
