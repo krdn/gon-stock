@@ -32,6 +32,10 @@ class ReadResult:
 
 
 ROUTES = {
+    'kr_bars': (
+        '/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice',
+        'FHKST03010200',
+    ),
     'kr_quote': ('/uapi/domestic-stock/v1/quotations/inquire-price', 'FHKST01010100'),
     'kr_orderbook': (
         '/uapi/domestic-stock/v1/quotations/inquire-asking-price-exp-ccn',
@@ -164,6 +168,14 @@ class KisReadClient:
                 raise ConnectionFailure('invalid_request')
             if us:
                 return {'AUTH': '', 'EXCD': args['exchange'], 'SYMB': args['symbol']}
+            if operation == 'kr_bars':
+                return {
+                    'FID_COND_MRKT_DIV_CODE': 'J',
+                    'FID_INPUT_ISCD': args['symbol'],
+                    'FID_INPUT_HOUR_1': '155900',
+                    'FID_PW_DATA_INCU_YN': 'N',
+                    'FID_ETC_CLS_CODE': '',
+                }
             return {'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': args['symbol']}
         params = {'CANO': self._credentials.account, 'ACNT_PRDT_CD': self._credentials.product}
         if us:
@@ -212,6 +224,8 @@ class KisReadClient:
             raise ConnectionFailure('broker_rejected')
         if operation.endswith('quote'):
             valid = isinstance(data.get('output'), dict) and bool(data['output'])
+        elif operation == 'kr_bars':
+            valid = isinstance(data.get('output1'), dict) and isinstance(data.get('output2'), list)
         elif operation.endswith('holdings'):
             valid = isinstance(data.get('output1'), list) and isinstance(
                 data.get('output2'), (list, dict)

@@ -38,3 +38,17 @@ CLI를 연속 실행하면 토큰을 새로 발급하므로 KIS 발급 제한에
 [환경 설정](https://github.com/koreainvestment/open-trading-api/blob/main/kis_devlp.yaml).
 
 오류 분류는 HTTP 상태와 [KIS 오류 코드](https://apiportal.koreainvestment.com/faq-error-code)를 함께 사용한다.
+
+## 날짜가 있는 국내 분봉 확인
+
+```sh
+uv run gon-stock kr_bars --environment mock --symbol 005930
+```
+
+공식 모의 지원 `FHKST03010200`을 사용한다. 조회 상한은 `15:59:00`, 과거 데이터 포함은 `N`이다.
+반환된 분봉들의 날짜·시간을 모두 검사하고 가장 늦은 값을 `clock.status=dated_bar`로 출력한다.
+빈 목록은 `missing`, 잘못된 값은 `invalid`다. 조회 성공과 시각 유효성은 별개다.
+이 값은 분봉 응답의 날짜·시각 필드이며 호가 시각이 아니다.
+공식 명세는 미래 시각 조회 시 현재가로 구간을 채운다고 설명한다. 요청 상한과 같은 시각은 체결 발생을 증명하지 않는다.
+고정 상한을 사용하는 형식 진단용이며 장중 실관측은 미검증이다. 실시간 수집·전체 일중 이력 조회 기능이 아니다.
+`event_time=null`, `freshness=unverified`를 유지하며, 수신일자를 호가에 붙이지 않는다.

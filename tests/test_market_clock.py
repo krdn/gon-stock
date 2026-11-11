@@ -1,6 +1,41 @@
 from gon_stock.market_clock import read_market_clock
 
 
+def test_bars_use_latest_dated_record_not_receive_date_or_array_order():
+    clock = read_market_clock(
+        'kr_bars',
+        {
+            'output2': [
+                {'stck_bsop_date': '20261110', 'stck_cntg_hour': '153000'},
+                {'stck_bsop_date': '20261111', 'stck_cntg_hour': '090100'},
+                {'stck_bsop_date': '20261111', 'stck_cntg_hour': '090000'},
+            ]
+        },
+    )
+    assert clock.status == 'dated_bar'
+    assert clock.source_date == '2026-11-11'
+    assert clock.source_time == '09:01:00'
+
+
+def test_empty_and_malformed_bars_do_not_claim_valid_time():
+    assert read_market_clock('kr_bars', {'output2': []}).status == 'missing'
+    for rows in [
+        None,
+        {},
+        [None],
+        [{}],
+        [
+            {'stck_bsop_date': '20260230', 'stck_cntg_hour': '090000'},
+        ],
+        [
+            {'stck_bsop_date': '20261111', 'stck_cntg_hour': 'secret'},
+        ],
+    ]:
+        clock = read_market_clock('kr_bars', {'output2': rows})
+        assert clock.status == 'invalid'
+        assert clock.source_date is None and clock.source_time is None
+
+
 def test_quote_cannot_use_historical_high_date_as_event_time():
     clock = read_market_clock('kr_quote', {'output': {'w52_hgpr_date': '20261111'}})
     assert clock.status == 'missing'
