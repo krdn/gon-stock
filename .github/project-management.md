@@ -8,10 +8,10 @@
 | Code·PR | 설계·구현·리뷰·버전별 변경 | 설계 초안 main 저장, 후속 변경은 PR |
 | Issues·하위 이슈 | 단계별 수용 기준·버그·예측 실패 개선 | P0 이슈 #1 생성, 하위 구현 이슈는 단계 확정 후 |
 | Projects | 단계, 상태, 우선순위, 차단 사유, 검증 근거 | krdn Project #19 생성·공개·repo 연결, #1 등록; 사용자 정의 필드는 pending |
-| Milestones·Labels | P0~P7 단계 묶음과 작업 분류 | pending |
+| Milestones·Labels | P0~P7 단계 묶음과 작업 분류 | P0~P7 Milestone 생성·연결, 추가 라벨은 필요 시 |
 | Discussions | 전략 후보·반론·검증 결론, 확정 시 문서 연결 | 설계 토론 #2 생성 |
 | Wiki | 설치·운영·복구 안내의 입구, 원문 docs 링크 | 기능 활성화; Wiki Git 조회 실패, 첫 페이지 미생성, docs로 대체 |
-| Actions | 문서·타입·테스트·재현 검증, 익명 보고서 | pending |
+| Actions | 문서·타입·테스트·재현 검증, 익명 보고서 | PR #13 문서 CI 실행·통과, 변경별 최종 SHA 확인 |
 | Releases·Tags | 검증된 버전·변경 내역·롤백 기준 | 구현 후 적용 |
 | Environments·Deployments | paper/live 분리와 배포 이력 | 배포 단계 적용 |
 | Security·의존성 검사 | 비밀값·취약점·공급망 검사 | 지원 플랜·권한 확인 후 적용 |
@@ -21,6 +21,8 @@
 | Pages | 공개 문서 사이트 | 개인 거래 대시보드는 공개하지 않음; 현재 불필요 |
 
 Project 상태는 Backlog→Ready→In progress→Review→Verified→Done으로 계획한다.
+현재 실제 Status는 Todo/In Progress/Done이며 Acceptance 필드로 미제출·검토·차단·위임 수용·직접 수용을 구분한다.
+기존 Status를 승인이나 사용자 수용으로 해석하지 않는다.
 구현 완료와 사용자 수용을 구분한다. 원격 기능이 불가능하면 사유와 Issues/docs 대체 경로를 남긴다.
 Wiki와 Discussions를 사용하더라도 설계를 여러 곳에 복제하지 않는다.
 실시간 거래·비상 정지는 GitHub Actions 스케줄이나 GitHub 가용성에 의존하지 않는다.
