@@ -105,6 +105,8 @@ def main():
                         'pages': len(pages),
                         'received_at': pages[-1].received_at.isoformat(),
                         'event_time': None,
+                        'clock': asdict(pages[-1].clock) if pages[-1].clock else None,
+                        'freshness': 'unverified',
                         'more': pages[-1].more,
                     }
                 except ConnectionFailure as error:

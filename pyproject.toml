@@ -9,6 +9,7 @@ dependencies = [
 
 [project.scripts]
 gon-stock = "gon_stock.cli:main"
+gon-stock-llm = "gon_stock.llm_cli:main"
 
 [build-system]
 requires = ["hatchling>=1.27,<2"]
