@@ -1,0 +1,21 @@
+name: 개발·검증 작업
+description: 승인 범위 안의 작업과 완료 조건을 기록합니다.
+body:
+  - type: textarea
+    id: scope
+    attributes:
+      label: 단계·목적·허용 범위
+      description: 상위 단계 이슈와 승인 기록을 연결하세요. 비밀값은 작성하지 마세요.
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: 완료 조건과 검사
+      description: 확인할 동작·실패 조건·필요한 증거를 적으세요.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 선행 조건·차단·다음 행동
