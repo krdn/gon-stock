@@ -5,6 +5,8 @@ from datetime import UTC, datetime
 
 import httpx
 
+from gon_stock.market_clock import MarketClock, read_market_clock
+
 
 class ConnectionFailure(Exception):
     def __init__(self, code: str):
@@ -26,6 +28,7 @@ class ReadResult:
     received_at: datetime
     more: bool
     event_time: datetime | None = None
+    clock: MarketClock | None = None
 
 
 ROUTES = {
@@ -222,7 +225,7 @@ class KisReadClient:
         if not valid or headers.get('tr_cont', '') not in ('', 'D', 'E', 'F', 'M'):
             raise ConnectionFailure('invalid_response')
         more = headers.get('tr_cont') in ('F', 'M')
-        return ReadResult(data, datetime.now(UTC), more)
+        return ReadResult(data, datetime.now(UTC), more, clock=read_market_clock(operation, data))
 
     def fetch(self, operation: str, **params) -> ReadResult:
         return self._fetch(operation, self._params(operation, params))

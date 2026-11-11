@@ -265,3 +265,50 @@ def test_real_key_on_mock_account_reports_environment_mismatch():
     with make(handler) as client:
         with pytest.raises(ConnectionFailure, match='environment_mismatch'):
             client.fetch('kr_holdings')
+
+
+@pytest.mark.parametrize('mode', ['complete', 'cycle', 'missing', 'limit'])
+def test_us_holdings_continuation_and_page_limit(mode):
+    calls = []
+
+    def handler(r):
+        if r.url.path == '/oauth2/tokenP':
+            return token()
+        calls.append(r)
+        assert r.url.params['OVRS_EXCG_CD'] == 'NASD'
+        assert r.headers['tr_id'] == 'VTTS3012R'
+        if len(calls) > 1:
+            assert r.headers['tr_cont'] == 'N'
+            assert r.url.params['CTX_AREA_FK200'] == 'fk'
+            assert r.url.params['CTX_AREA_NK200'] == (
+                '1' if mode != 'limit' else str(len(calls) - 1)
+            )
+        more = len(calls) == 1 or mode != 'complete'
+        next_key = str(len(calls)) if mode == 'limit' else '1'
+        return httpx.Response(
+            200,
+            headers={'tr_cont': 'F' if more else 'D'},
+            json={
+                'rt_cd': '0',
+                'output1': [],
+                'output2': {},
+                'ctx_area_fk200': 'fk',
+                'ctx_area_nk200': '' if mode == 'missing' else next_key,
+            },
+        )
+
+    with make(handler) as client:
+        if mode == 'complete':
+            assert len(client.fetch_pages('us_holdings', exchange='NASD')) == 2
+        else:
+            with pytest.raises(ConnectionFailure) as exc:
+                client.fetch_pages('us_holdings', exchange='NASD')
+            assert (
+                exc.value.code
+                == {
+                    'cycle': 'pagination_cycle',
+                    'missing': 'invalid_response',
+                    'limit': 'pagination_limit',
+                }[mode]
+            )
+    assert len(calls) == {'complete': 2, 'cycle': 2, 'missing': 1, 'limit': 100}[mode]

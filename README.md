@@ -12,6 +12,7 @@
 - [GitHub 운영](.github/project-management.md)
 - [현재 상태](docs/STATE.md)
 
-KIS 읽기 전용 클라이언트와 [모의투자 조회 CLI](docs/operations/kis-readonly.md)를 구현 중이다.
-실제 API 조회, Buzz 에이전트 가동, 백테스트 및 실주문은 아직 검증하지 않았다.
+KIS 읽기 전용 클라이언트와 [모의투자 조회 CLI](docs/operations/kis-readonly.md)로 6종 실제 조회를 확인했다.
+[LLM 프록시 CLI](docs/operations/llm-proxy.md)는 요청·반환 모델 일치와 실패를 구분한다.
+P1의 시세 신선도·일부 모델 연결은 미완료이며 Buzz 에이전트 가동·백테스트·실주문은 미검증이다.
 공개 저장소에는 코드·설계·익명화된 검증만 남긴다. 계좌·인증·실제 거래 내역은 비공개로 보관한다.
