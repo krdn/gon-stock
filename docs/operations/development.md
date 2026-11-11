@@ -10,7 +10,7 @@ Python 3.13을 사용한다. 현재 문서 검사는 표준 라이브러리만 �
 ```sh
 python --version
 python scripts/check_docs.py
-git diff --check
+git diff --check 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD
 ```
 
 Python 3.13이 설치된 uv 환경에서는 `uv run --python 3.13 --no-project python scripts/check_docs.py`로 실행한다.
@@ -20,8 +20,8 @@ Python 3.13이 설치된 uv 환경에서는 `uv run --python 3.13 --no-project p
 
 1. 작업 트리와 원격 상태, 현재 단계·승인을 읽는다.
 2. 작업 이슈를 연결한 branch에서 구현하고 관련 검사를 수행한다.
-3. 필요한 변경에는 Fable 5.2 리뷰를 수행한다. 요청·반환 모델과 검토 대상을 남긴다.
-4. PR의 마지막 SHA와 검사 결과를 확인한다. 승인된 범위에서만 merge한다.
+3. 기능·설계·위험 규칙 변경은 로컬 Fable 5.2 리뷰를 수행한다. 요청·반환 모델과 검토 대상을 남긴다. 사소한 문서·설정은 예외다.
+4. PR의 마지막 SHA, 리뷰 지적 처리와 검사 결과를 확인한다. 리뷰 실패나 미해결 핵심 지적이 있으면 merge하지 않는다.
 5. 통합 후 main 검사와 수용 기준을 확인하고 다음 작업을 기록한다.
 
 CI의 `docs` 검사는 문서 검사일 뿐 금융 기능 검증이 아니다.

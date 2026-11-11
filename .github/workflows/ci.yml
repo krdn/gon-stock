@@ -29,5 +29,5 @@ jobs:
         run: python scripts/check_docs.py
       - name: Python 구문 검사
         run: python -m py_compile scripts/check_docs.py
-      - name: 변경 공백 검사
-        run: git show --format= --check HEAD
+      - name: 저장소 공백 검사
+        run: git diff --check 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD
