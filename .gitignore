@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+.private/
+logs/
+.claude/
+data/
+artifacts/private/
+__pycache__/
+.venv/
+node_modules/
