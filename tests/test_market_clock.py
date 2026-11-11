@@ -1,6 +1,42 @@
 from gon_stock.market_clock import read_market_clock
 
 
+def test_us_bar_timestamp_uses_explicit_korean_clock_across_dst():
+    for date, hour, local_date, local_hour in [
+        ('20261112', '002400', '20261111', '102400'),
+        ('20260702', '002400', '20260701', '112400'),
+    ]:
+        clock = read_market_clock(
+            'us_bars',
+            {
+                'output2': [
+                    {
+                        'kymd': date,
+                        'khms': hour,
+                        'xymd': local_date,
+                        'xhms': local_hour,
+                    }
+                ]
+            },
+        )
+        assert clock.status == 'timestamped_bar'
+        assert clock.source_timezone == 'Asia/Seoul'
+        assert clock.event_time.isoformat() == (
+            '2026-11-11T15:24:00+00:00' if date == '20261112' else '2026-07-01T15:24:00+00:00'
+        )
+
+
+def test_us_bar_inconsistent_or_missing_local_clock_is_rejected():
+    for fields in [
+        {'kymd': '20261112', 'khms': '002400', 'xymd': '20261111', 'xhms': '112400'},
+        {'kymd': '20261112', 'khms': '002400'},
+        {'kymd': '20260230', 'khms': '002400', 'xymd': '20260228', 'xhms': '102400'},
+    ]:
+        clock = read_market_clock('us_bars', {'output2': [fields]})
+        assert clock.status in ('invalid', 'inconsistent')
+        assert clock.event_time is None
+
+
 def test_bars_use_latest_dated_record_not_receive_date_or_array_order():
     clock = read_market_clock(
         'kr_bars',
