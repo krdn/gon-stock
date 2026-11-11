@@ -30,4 +30,9 @@
 
 ## 수정 검증
 
-수정분에 한정한 후속 리뷰와 최종 SHA CI 결과는 추가 기록한다. 최초 CHANGES_REQUESTED를 삭제하지 않는다.
+수정분 후속 리뷰는 **PASS**, 지적 1~7 모두 해결로 판정했다. 최초 CHANGES_REQUESTED는 보존한다.
+후속 응답도 `subtype=success`, `is_error=false`, `canonicalModel=claude-fable-5-2`, `provider=firstParty`였다.
+후속 입력 SHA-256: `73c09282130d003cb91f0c39c09aac4ace6f216d26b798821b0eee9fd4623f53`.
+대상 diff: 준비 branch `eaff0bc..b815161`, 제안 branch `bb4b19b..1514208`, 상태 branch `4b6a2ab..aac03fa`.
+CI와 통합 결과는 PR #13/#12/#3 및 P0 이슈에 최종 SHA와 함께 연결한다.
+후속 리뷰는 문장·diff 검토이며 실제 위험 엔진·DB 장애·체결 시험은 NOT_RUN이다.
