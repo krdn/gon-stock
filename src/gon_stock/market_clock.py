@@ -11,6 +11,30 @@ class MarketClock:
 
 
 def read_market_clock(operation: str, payload: dict) -> MarketClock:
+    if operation == 'kr_bars':
+        rows = payload.get('output2')
+        if not isinstance(rows, list):
+            return MarketClock('invalid')
+        if not rows:
+            return MarketClock('missing')
+        stamps = []
+        for row in rows:
+            if not isinstance(row, dict):
+                return MarketClock('invalid')
+            date, hour = row.get('stck_bsop_date'), row.get('stck_cntg_hour')
+            if (
+                not isinstance(date, str)
+                or not re.fullmatch(r'[0-9]{8}', date)
+                or not isinstance(hour, str)
+                or not re.fullmatch(r'[0-9]{6}', hour)
+            ):
+                return MarketClock('invalid')
+            try:
+                stamps.append(datetime.strptime(date + hour, '%Y%m%d%H%M%S'))
+            except ValueError:
+                return MarketClock('invalid')
+        latest = max(stamps)
+        return MarketClock('dated_bar', latest.date().isoformat(), latest.time().isoformat())
     if operation not in ('kr_orderbook', 'us_orderbook'):
         return MarketClock('missing')
     fields = payload.get('output1')

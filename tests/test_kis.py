@@ -26,6 +26,69 @@ def token():
     )
 
 
+def test_domestic_bars_readonly_contract():
+    def handler(r):
+        if r.url.path == '/oauth2/tokenP':
+            return token()
+        assert r.method == 'GET'
+        assert r.url.path == '/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice'
+        assert r.headers['tr_id'] == 'FHKST03010200'
+        assert dict(r.url.params) == {
+            'FID_COND_MRKT_DIV_CODE': 'J',
+            'FID_INPUT_ISCD': '005930',
+            'FID_INPUT_HOUR_1': '155900',
+            'FID_PW_DATA_INCU_YN': 'N',
+            'FID_ETC_CLS_CODE': '',
+        }
+        return httpx.Response(
+            200,
+            json={
+                'rt_cd': '0',
+                'output1': {'stck_prpr': '71000'},
+                'output2': [{'stck_bsop_date': '20261111', 'stck_cntg_hour': '153000'}],
+            },
+        )
+
+    with make(handler) as client:
+        result = client.fetch('kr_bars', symbol='005930')
+    assert result.clock.status == 'dated_bar'
+    assert result.clock.source_date == '2026-11-11'
+    assert result.event_time is None
+
+
+@pytest.mark.parametrize('rows', [None, {}, 'invalid'])
+def test_domestic_bars_reject_non_list_rows(rows):
+    def handler(r):
+        return (
+            token()
+            if r.url.path == '/oauth2/tokenP'
+            else httpx.Response(
+                200,
+                json={'rt_cd': '0', 'output1': {}, 'output2': rows},
+            )
+        )
+
+    with make(handler) as client, pytest.raises(ConnectionFailure, match='invalid_response'):
+        client.fetch('kr_bars', symbol='005930')
+
+
+def test_empty_domestic_bars_do_not_claim_a_timestamp():
+    def handler(r):
+        return (
+            token()
+            if r.url.path == '/oauth2/tokenP'
+            else httpx.Response(
+                200,
+                json={'rt_cd': '0', 'output1': {}, 'output2': []},
+            )
+        )
+
+    with make(handler) as client:
+        result = client.fetch('kr_bars', symbol='005930')
+    assert result.clock.status == 'missing'
+    assert result.event_time is None
+
+
 def test_orders_and_invalid_parameters_never_send_credentials():
     calls = []
     with make(lambda r: calls.append(r)) as client:
