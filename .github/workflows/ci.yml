@@ -1,0 +1,33 @@
+name: Repository checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+      - name: 문서 검사
+        run: python scripts/check_docs.py
+      - name: Python 구문 검사
+        run: python -m py_compile scripts/check_docs.py
+      - name: 저장소 공백 검사
+        run: git diff --check 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD
