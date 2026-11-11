@@ -14,11 +14,11 @@
 | 검사 | 결과 | 한계 |
 | --- | --- | --- |
 | Python 3.13 | uv 관리 Python 3.13.11 확인 | 배포 서버 환경은 별도 검증 |
-| 문서 링크·코드블록 | 등록 Markdown 9개 통과 | 외부 URL·제목 앵커 제외 |
+| 문서 링크·코드블록 | 등록 Markdown 10개 통과 | 외부 URL·제목 앵커 제외 |
 | 검사 도구 오류 탐지 | 누락 링크·미종결 코드블록 거부, 정상 문서 통과 | 임시 fixture로 실행 |
 | Python 구문 | py_compile 통과 | 거래 코드 없음 |
 | Git 공백 검사 | 통과 | 런타임 증거 아님 |
-| GitHub Actions | 저장소 활성화 확인 | 변경 PR의 실제 CI 결과는 별도 연결 |
+| GitHub Actions | [PR #13 검사 통과](https://github.com/krdn/gon-stock/actions/runs/43014029706) | 준비 코드 첫 SHA의 검사이며 후속 변경은 재검사 |
 | pane 제어 | Orca runtime metadata 없음 | 현재 탭 pane을 생성·제어했다고 주장하지 않음 |
 
 ## Fable 5.2 차단
@@ -33,3 +33,5 @@
 
 Claude 인증 반영 확인 → Fable 실제 응답·리뷰 → 지적 반영 → 최종 SHA 검사 → 문서/준비 PR 통합 → P0 수용 판단.
 기존 PR #3과 #12는 별도 branch다. 준비 PR과 통합할 때 최신 main 기준으로 충돌·링크·STATE를 확인한다.
+
+키움 공식 소프트웨어의 재배포·수정 제한을 확인했다. 공개 코드에 원본을 복사하지 않는 방향을 [조사 기록](../../research/evidence.md)에 반영했다.
