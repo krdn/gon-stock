@@ -104,7 +104,9 @@ def main():
                         'status': 'ok',
                         'pages': len(pages),
                         'received_at': pages[-1].received_at.isoformat(),
-                        'event_time': None,
+                        'event_time': (
+                            pages[-1].event_time.isoformat() if pages[-1].event_time else None
+                        ),
                         'clock': asdict(pages[-1].clock) if pages[-1].clock else None,
                         'freshness': 'unverified',
                         'more': pages[-1].more,

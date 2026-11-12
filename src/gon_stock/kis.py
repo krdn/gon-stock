@@ -1,7 +1,8 @@
 import re
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
+from zoneinfo import ZoneInfo
 
 import httpx
 
@@ -32,6 +33,10 @@ class ReadResult:
 
 
 ROUTES = {
+    'us_bars': (
+        '/uapi/overseas-price/v1/quotations/inquire-time-itemchartprice',
+        'HHDFS76950200',
+    ),
     'kr_bars': (
         '/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice',
         'FHKST03010200',
@@ -154,6 +159,8 @@ class KisReadClient:
     def _params(self, operation, args):
         if operation not in ROUTES:
             raise ConnectionFailure('operation_not_allowed')
+        if operation == 'us_bars' and self._environment != 'real':
+            raise ConnectionFailure('unsupported_environment')
         holdings = operation.endswith('holdings')
         us = operation.startswith('us_')
         allowed = ({'exchange'} if us else set()) | (set() if holdings else {'symbol'})
@@ -167,12 +174,26 @@ class KisReadClient:
             if not re.fullmatch(r'[A-Z][A-Z0-9.\-]{0,15}' if us else r'[0-9]{6}', args['symbol']):
                 raise ConnectionFailure('invalid_request')
             if us:
+                if operation == 'us_bars':
+                    return {
+                        'AUTH': '',
+                        'EXCD': args['exchange'],
+                        'SYMB': args['symbol'],
+                        'NMIN': '1',
+                        'PINC': '1',
+                        'NEXT': '',
+                        'NREC': '1',
+                        'FILL': '',
+                        'KEYB': '',
+                    }
                 return {'AUTH': '', 'EXCD': args['exchange'], 'SYMB': args['symbol']}
             if operation == 'kr_bars':
                 return {
                     'FID_COND_MRKT_DIV_CODE': 'J',
                     'FID_INPUT_ISCD': args['symbol'],
-                    'FID_INPUT_HOUR_1': '155900',
+                    'FID_INPUT_HOUR_1': min(
+                        datetime.now(ZoneInfo('Asia/Seoul')).strftime('%H%M%S'), '153000'
+                    ),
                     'FID_PW_DATA_INCU_YN': 'N',
                     'FID_ETC_CLS_CODE': '',
                 }
@@ -224,7 +245,7 @@ class KisReadClient:
             raise ConnectionFailure('broker_rejected')
         if operation.endswith('quote'):
             valid = isinstance(data.get('output'), dict) and bool(data['output'])
-        elif operation == 'kr_bars':
+        elif operation in ('kr_bars', 'us_bars'):
             valid = isinstance(data.get('output1'), dict) and isinstance(data.get('output2'), list)
         elif operation.endswith('holdings'):
             valid = isinstance(data.get('output1'), list) and isinstance(
@@ -239,7 +260,11 @@ class KisReadClient:
         if not valid or headers.get('tr_cont', '') not in ('', 'D', 'E', 'F', 'M'):
             raise ConnectionFailure('invalid_response')
         more = headers.get('tr_cont') in ('F', 'M')
-        return ReadResult(data, datetime.now(UTC), more, clock=read_market_clock(operation, data))
+        received_at = datetime.now(UTC)
+        clock = read_market_clock(operation, data)
+        if clock.event_time and clock.event_time > received_at:
+            clock = replace(clock, status='future')
+        return ReadResult(data, received_at, more, event_time=clock.event_time, clock=clock)
 
     def fetch(self, operation: str, **params) -> ReadResult:
         return self._fetch(operation, self._params(operation, params))

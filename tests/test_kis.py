@@ -1,5 +1,5 @@
 import json
-from datetime import UTC
+from datetime import UTC, datetime
 
 import httpx
 import pytest
@@ -26,7 +26,14 @@ def token():
     )
 
 
-def test_domestic_bars_readonly_contract():
+def test_domestic_bars_readonly_contract(monkeypatch):
+    class Clock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return datetime(2026, 11, 11, 1, 24, tzinfo=UTC).astimezone(tz)
+
+    monkeypatch.setattr('gon_stock.kis.datetime', Clock)
+
     def handler(r):
         if r.url.path == '/oauth2/tokenP':
             return token()
@@ -36,7 +43,7 @@ def test_domestic_bars_readonly_contract():
         assert dict(r.url.params) == {
             'FID_COND_MRKT_DIV_CODE': 'J',
             'FID_INPUT_ISCD': '005930',
-            'FID_INPUT_HOUR_1': '155900',
+            'FID_INPUT_HOUR_1': '102400',
             'FID_PW_DATA_INCU_YN': 'N',
             'FID_ETC_CLS_CODE': '',
         }
@@ -53,6 +60,80 @@ def test_domestic_bars_readonly_contract():
         result = client.fetch('kr_bars', symbol='005930')
     assert result.clock.status == 'dated_bar'
     assert result.clock.source_date == '2026-11-11'
+    assert result.event_time is None
+
+
+def test_us_bars_real_only_contract_and_event_time():
+    def handler(r):
+        if r.url.path == '/oauth2/tokenP':
+            return token()
+        assert r.method == 'GET'
+        assert r.url.host == 'openapi.koreainvestment.com'
+        assert r.url.path == '/uapi/overseas-price/v1/quotations/inquire-time-itemchartprice'
+        assert r.headers['tr_id'] == 'HHDFS76950200'
+        assert dict(r.url.params) == {
+            'AUTH': '',
+            'EXCD': 'NAS',
+            'SYMB': 'AAPL',
+            'NMIN': '1',
+            'PINC': '1',
+            'NEXT': '',
+            'NREC': '1',
+            'FILL': '',
+            'KEYB': '',
+        }
+        return httpx.Response(
+            200,
+            json={
+                'rt_cd': '0',
+                'output1': {},
+                'output2': [
+                    {
+                        'kymd': '20260110',
+                        'khms': '002400',
+                        'xymd': '20260109',
+                        'xhms': '102400',
+                    }
+                ],
+            },
+        )
+
+    with make(handler, 'real') as client:
+        result = client.fetch('us_bars', symbol='AAPL', exchange='NAS')
+    assert result.event_time == datetime(2026, 1, 9, 15, 24, tzinfo=UTC)
+    assert result.clock.status == 'timestamped_bar'
+    calls = []
+    with make(lambda r: calls.append(r)) as client:
+        with pytest.raises(ConnectionFailure, match='unsupported_environment'):
+            client.fetch('us_bars', symbol='AAPL', exchange='NAS')
+    assert calls == []
+
+
+def test_future_us_bar_cannot_supply_an_event_time():
+    def handler(r):
+        return (
+            token()
+            if r.url.path == '/oauth2/tokenP'
+            else httpx.Response(
+                200,
+                json={
+                    'rt_cd': '0',
+                    'output1': {},
+                    'output2': [
+                        {
+                            'kymd': '20990110',
+                            'khms': '002400',
+                            'xymd': '20990109',
+                            'xhms': '102400',
+                        }
+                    ],
+                },
+            )
+        )
+
+    with make(handler, 'real') as client:
+        result = client.fetch('us_bars', symbol='AAPL', exchange='NAS')
+    assert result.clock.status == 'future'
     assert result.event_time is None
 
 
