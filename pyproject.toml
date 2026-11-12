@@ -4,12 +4,16 @@ version = "0.1.0"
 description = "한국투자증권 국내·미국 주식 연구와 모의 검증"
 requires-python = ">=3.13"
 dependencies = [
+  "duckdb>=2.0,<2.1",
+  "exchange-calendars>=4.11,<5",
   "httpx>=0.28,<1",
+  "pytz>=2026.6",
 ]
 
 [project.scripts]
 gon-stock = "gon_stock.cli:main"
 gon-stock-llm = "gon_stock.llm_cli:main"
+gon-stock-data = "gon_stock.data_cli:main"
 
 [build-system]
 requires = ["hatchling>=1.27,<2"]
