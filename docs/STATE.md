@@ -12,9 +12,13 @@
 - 미국 분봉: 정식 `us_bars`는 명세의 한국·뉴욕 시각 일치를 검사하고 UTC 시각을 출력한다. 미래·불일치 시각은 event_time=null이다. 신선도는 계속 unverified다.
 - P2: 관심 종목·DuckDB/Parquet 저장·시점 재생·품질 구현. 150 tests·Fable 수정분 리뷰·PR/main CI PASS. [위임 수용](https://github.com/krdn/gon-stock/issues/6#issuecomment-6811449518), [검증과 한계](evidence/P2/validation.md).
 - P3 구현: [계약](plans/p3-evaluation.md)에 따라 장중 기준 전략·비용·시간순 분리·확률 보정·비공개 평가 CLI·미래 수집기를 구현했다. [실행 절차](operations/p3-research.md). 175 tests·Ruff·format·build PASS, Fable 수정분 리뷰 PASS. [검증 기록](evidence/P3/implementation.md). PR #21 병합 후 main CI PASS, 리뷰 소스 동일성 확인.
-- P3 데이터: 사용자가 과거 시점 자료가 없음을 확인하고 미래 수집 자료로 검증하기로 했다. 현재 31행은 성과 평가용 자료가 아니다. 실제 성과·P3 수용·P4 진입은 자료와 품질 근거가 충분할 때까지 보류한다.
+- P3 데이터: 사용자가 과거 시점 자료가 없음을 확인하고 미래 수집 자료로 검증하기로 했다. 실제 성과·P3 수용은 자료와 품질 근거가 충분할 때까지 보류한다. 초기 31행은 성과 평가용 자료가 아니다.
 - 미래 수집: 고정 SHA `c017d8e` 사용자 서비스 2개 활성. 국내 두 종목에서 10:57/10:58 KST 연속 저장, 중단 후 DB 재열기 보존과 재시작 수집 확인. 미국은 장외 예약만 확인했고 장중 수집은 미검증이다. 종료 한도 2026-11-19 09:00 KST, 오류 시 중단, 수집 중 호스트 절전 방지.
-- 다음 행동: [P3 #7](https://github.com/krdn/gon-stock/issues/7) 미국 첫 정규장 실제 분봉·시각 전진을 확인하고 미래 자료의 누락·품질 근거를 쌓는다. 수집량만으로 성과 수용하지 않으며 P4는 보류한다.
+- P4 병행: [2026-11-12 추가 승인](https://github.com/krdn/gon-stock/issues/4#issuecomment-6812438087)으로 P3 검증과 [P4 개발](plans/p4-decision-flow.md)을 병행한다. P4 기술 검증은 P3 성과 수용이 아니다.
+- P4 로컬 구현: 연구 작업대·관심 목록·검토·관망 카드·중단 상태, 합성 입력의 실제 프록시 응답·카드 저장·화면 검증 PASS.
+- P4 Buzz: 사용자 제공 CLI로 전용 신원 2개 생성·소유자 서명·가입 검증. Astra 전략→agy Argon 반론의 실제 같은 스레드 응답과 운영자가 요약한 관망 카드·알림 재조회 PASS. 웹 카드 자동 연동·상시 운용은 별개다.
+- P4 리뷰: Fable 429 이후 [사용자 임시 승인](https://github.com/krdn/gon-stock/issues/4#issuecomment-6813761223)으로 agy Argon high 사용. 첫 지적 수정과 208 tests·Ruff·format·build PASS. 수정분 리뷰 PASS·리뷰 소스 동일성 확인. 최종 CI·병합 확인 중.
+- 다음 행동: [P3 #7](https://github.com/krdn/gon-stock/issues/7) 미래 자료와 품질 근거 확보, [P4 #8](https://github.com/krdn/gon-stock/issues/8) 코드 리뷰·CI·병합 및 실제 Buzz 연결. P5 통합 운용 진입은 P3·P4 수용 후다.
 - P5 전 필수: 실제 분봉 라벨·누락·연간 거래소 공지·서버 시계 오차 확인. P3는 현재 관심 목록을 과거 종목군으로 사용하지 않고 정규장 밖 자료를 거래 입력에서 제외한다.
 - 후속 소유: 호가 일자·시간대와 신선도는 P2 품질/P5 운용, Argon 동등성은 P3 선정에서 검사한다. Argon 불일치 FAIL을 유지한다.
 - 코드 리뷰: 로컬 Fable 5.2 high 요청, canonicalModel·firstParty 반환 확인. 본체·수정분 PASS. 97 tests·프로젝트 Ruff·format·build·docs PASS. [관측과 비차단 지적 처리](evidence/P1/acceptance.md).

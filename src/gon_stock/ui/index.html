@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GON STOCK · 연구 작업대</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">GON <strong>STOCK</strong></a>
+    <span class="mode">연구 전용</span>
+    <button id="pause" class="secondary" type="button">연구 요청 일시중단</button>
+  </header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">RESEARCH WORKBENCH</p>
+      <h1>근거를 모으고,<br>반론까지 확인합니다.</h1>
+      <p>관심 종목의 자료를 검토하는 공간입니다. 모든 결과는 관망으로 기록하며 주문을 실행하지 않습니다.</p>
+    </section>
+    <section class="status-grid" aria-label="검증 상태">
+      <article><span>전략 성과 · 확률</span><strong>검증 대기</strong><small>P3 미래 자료 수집·평가 중</small></article>
+      <article><span>보유 상태</span><strong>미연결</strong><small>계좌·보유 수량 조회 안 함</small></article>
+      <article><span>Buzz 연결</span><strong>연결 검증 대기</strong><small>로컬 응답과 채널 응답을 구분</small></article>
+      <article><span>연구 요청</span><strong id="run-status">확인 중</strong><small>최대 두 번 보완 · 무한 호출 없음</small></article>
+    </section>
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+    <div class="workspace">
+      <aside class="panel">
+        <div class="section-heading"><h2>관심 목록</h2><span id="watch-count">0</span></div>
+        <p class="muted">연구용 목록입니다. 수집 종목이나 계좌 설정을 바꾸지 않습니다.</p>
+        <form id="watch-form">
+          <label for="watch-exchange">시장</label>
+          <select id="watch-exchange"><option value="XKRX">한국 · KRX</option><option value="XNAS">미국 · NASDAQ</option><option value="XNYS">미국 · NYSE</option><option value="XASE">미국 · AMEX</option></select>
+          <label for="watch-symbol">종목 코드</label>
+          <div class="input-row"><input id="watch-symbol" required maxlength="15" placeholder="예: 005930" autocomplete="off"><button type="submit">등록</button></div>
+        </form>
+        <ul id="watchlist" class="watchlist"></ul>
+      </aside>
+      <section class="panel request-panel">
+        <div class="section-heading"><h2>새 연구 요청</h2><span class="tag">Astra → Fable 5.2</span></div>
+        <p class="muted">자료 묶음만 검토합니다. 원문을 자동 조회하거나 사실 확인을 완료한 것으로 표시하지 않습니다.</p>
+        <form id="request-form">
+          <label for="target">관심 종목</label><select id="target" required></select>
+          <label for="question">검토할 질문</label><textarea id="question" required maxlength="2000" rows="2" placeholder="어떤 가정과 반대 근거를 검토할까요?"></textarea>
+          <div class="two-columns">
+            <div><label for="source-url">출처 URL</label><input id="source-url" type="url" required placeholder="https://…"></div>
+            <div><label for="published">발표 시각</label><input id="published" type="datetime-local" required><small>현재 브라우저의 현지 시각</small></div>
+          </div>
+          <label for="excerpt">검토할 원문 발췌</label><textarea id="excerpt" required maxlength="4000" rows="4" placeholder="계좌 정보·인증값을 포함하지 마세요."></textarea>
+          <div class="form-bottom"><small>현재 시각을 자료 기준으로 기록 · 유효기간 10분</small><button id="submit-request" type="submit">제안과 반론 검토</button></div>
+          <p class="muted compact">일시중단은 다음 모델 호출을 막습니다. 이미 진행 중인 응답은 끝난 뒤 중단됩니다.</p>
+        </form>
+      </section>
+    </div>
+    <section class="results">
+      <div class="section-heading"><div><p class="eyebrow">DECISION LOG</p><h2>결정 카드</h2></div><span class="muted">최신 100개 요청</span></div>
+      <div id="cards"></div>
+    </section>
+    <footer>성과 검증 전 · 확률 미표시 · 주문 권한 없음 <span id="updated"></span></footer>
+  </main>
+</body>
+</html>

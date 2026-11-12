@@ -16,6 +16,8 @@ gon-stock-llm = "gon_stock.llm_cli:main"
 gon-stock-data = "gon_stock.data_cli:main"
 gon-stock-research = "gon_stock.research_cli:main"
 gon-stock-collect = "gon_stock.collector:main"
+gon-stock-workbench = "gon_stock.workbench:main"
+gon-stock-buzz = "gon_stock.buzz:main"
 
 [build-system]
 requires = ["hatchling>=1.27,<2"]

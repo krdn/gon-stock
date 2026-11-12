@@ -12,8 +12,8 @@
 | P1 | [읽기 전용 연결 #5](https://github.com/krdn/gon-stock/issues/5) | P0 | B 위임 승인·선행 수용 대기 |
 | P2 | [저장·재생 #6](https://github.com/krdn/gon-stock/issues/6) | P1 | B 위임 승인·선행 수용 대기 |
 | P3 | [전략·확률 검증 #7](https://github.com/krdn/gon-stock/issues/7) | P2 | B 위임 승인·선행 수용 대기 |
-| P4 | [Buzz·최소 화면 #8](https://github.com/krdn/gon-stock/issues/8) | P3 | B 위임 승인·선행 수용 대기 |
-| P5 | [모의·관찰 #9](https://github.com/krdn/gon-stock/issues/9) | P4 | B 위임 승인·선행 수용 대기 |
+| P4 | [Buzz·최소 화면 #8](https://github.com/krdn/gon-stock/issues/8) | P3 구현·P2 수용 | 추가 승인으로 P3 성과 검증과 개발 병행 |
+| P5 | [모의·관찰 #9](https://github.com/krdn/gon-stock/issues/9) | P3·P4 수용 | B 위임 승인·선행 수용 대기 |
 | P6 | [실전 준비 #10](https://github.com/krdn/gon-stock/issues/10) | P5 결과 수용 | 미승인 |
 | P7 | [제한 운용 #11](https://github.com/krdn/gon-stock/issues/11) | P6·별도 실거래 시작 결정 | 미승인 |
 
