@@ -75,3 +75,21 @@ v2 전체 재검사에서 충돌 0건을 확인한 뒤 분석했다. 수신시�
 - 국내 v2 분석: `67b5c7683916c167f49bdeb090d8919f6d2a8b3a6dbb10270ac093385e045c98`.
 - 비공개 재현 자료: `.private/p3-history-20261113/`의 `pages/`, `recheck/`, `plan.json`, `quality-final.json`, `kr-v2-manifest.json`, `kr-v2-analysis.json`, 실행 스크립트와 리뷰·소스 해시 목록. 최초 다운로드 당시 소스도 별도 보존했다.
 - 다음: 국내 충돌 원인·마감 구간과 미국 과거 시각/제공 범위 확인, 실제 비용·정정/기업행동·달력 근거 확보. 기존 고정 SHA의 실시간 수집은 유지하며 P3 성과 수용·P5는 계속 보류한다.
+
+## 2026-11-13 자료 보강 조사
+
+국내 분봉과 KIS 일봉을 118일씩 대조했다. 삼성전자 분봉 집계는 수정 일봉과 시가/고가 118일, 종가 114일, 저가 117일 일치했다. KODEX 200도 수정 일봉 기준 시가55·고가65·저가59·종가66일만 일치했다. 분봉 거래량 합계/일봉 거래량 비율은 각각 68.30~100.00%, 72.96~98.67%였다. 서로 다른 세션 범위·가격 조정·봉 라벨 가능성이 남아 있어 이를 누락률이나 공급자 오류율로 해석하지 않는다.
+
+누락 후보를 포함한 21개 요청을 같은 KIS 분봉 경로로 재조회했지만 복구된 후보 봉은 0개였다. 최초 충돌의 원인과 일봉 불일치 원인은 미확정이다. 원본과 기존 조건부 성과는 보존하며 P3 수용/P5 보류를 유지한다.
+
+미국 대안으로 Alpaca SIP 원본 수집기를 추가했다. [공식 API](https://docs.alpaca.markets/us/reference/stockbars)의 `1Min`, `sip`, `raw`, `asof=-`와 페이지 토큰을 사용한다. [공식 요금/범위](https://docs.alpaca.markets/us/docs/about-market-data-api)는 Basic의 과거 자료와 최근 15분 제한을 구분한다(2026-11-13 확인). 실제 계정 권한·응답은 아직 확인하지 않았다. OS 인증 저장소에서 사용 가능한 키를 찾지 못해 실수집·정규화·미국 성과는 NOT_RUN이다. IEX로 자동 대체하지 않는다.
+
+수집기의 완료 manifest는 요청 종료와 종목별 비어 있지 않은 응답만 뜻한다. OHLCV 정합성·거래일별 coverage·정정/기업행동·시점 가용성 검증과 기존 평가기 연결은 후속 작업이다. `NOT_EVALUATED` 상태이며 P3 수용을 허용하지 않는다. [인증과 실행](../../operations/p3-research.md#alpaca-과거-원본-확보)을 참고한다.
+
+비공개 조사 근거 SHA-256:
+
+- `daily-comparison.json`: `84bfab3e68e3b2e2eca0be4f5ee0aeea08cf5200e79c495d51beeb7daf639b8d`
+- `adjusted-comparison.json`: `16232990059747d663fc17c911ff44637a8663e14fa597b0a89afa269a6d8ed2`
+- `gap-recovery.json`: `f25978eb4a0d7ad41447b4ccc262a1c310a15b76e78bebc8ac8cd1a3c6dee0b8`
+
+추가 변경 검증: 228 tests PASS 후 float 응답 저장/해시 보강분 6 tests PASS. 프로젝트 Ruff(src/tests)·format·build·문서 링크 PASS. 로컬 `claude-fable-5-2` high 최초 지적 2건을 반영했고 수정분 PASS, 반환 `canonicalModel=claude-fable-5-2`, `provider=firstParty`를 확인했다. 실수집은 NOT_RUN이다. 저장소 전체 Ruff는 기존 `scripts/check_docs.py` import 정렬 1건, evolve 문체 검사는 기준 파일 부재로 미통과다.
