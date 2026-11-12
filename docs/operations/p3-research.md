@@ -57,3 +57,23 @@ bps 숫자 문자열로 모두 지정한다. `verified`의 `bar_labels`, `calend
 사용하지 않는다. 종목 순서·거래소 별칭 변경으로 같은 구간을 재실행해서도 안 된다.
 `BLOCKED`는 자료/검증 부족, `REJECTED`는 기준 미달, `CANDIDATE_PASS`는 후보 기준 통과다.
 후보 통과도 P3 수용·P4 시작·주문 승인이 아니다.
+
+## Alpaca 과거 원본 확보
+
+미국 KIS 과거 제공 범위와 시각 불일치를 보완하기 위한 별도 자료원이다. 계정 생성·유료 구독은 자동 수행하지 않는다. 기존 고정 평가 기간과 종목을 유지한다.
+
+Paper 계정 키만 등록한다. Live 계정 키는 등록하지 않는다. 키 종류는 코드에서 판별하지 않으므로 사용자가 계정 화면에서 확인한다.
+
+API 키 두 값은 본인 터미널에서 아래 명령으로 입력한다. 입력은 화면에 표시하지 않으며 OS Secret Service에 저장한다. 키를 대화나 명령 인수에 쓰지 않는다.
+
+```sh
+cd /home/gon/llm-projects/gon-stock
+uv run python -m gon_stock.alpaca_history --register
+uv run python -m gon_stock.alpaca_history \
+  --plan .private/p3-history-20261113/plan.json \
+  --output .private/p3-sources-20261113/alpaca-pages
+```
+
+등록 성공은 API 접근 성공이 아니다. 수집은 SIP·raw와 고정 종목명만 요청한다. 인증 실패·HTTP 오류에서는 중단하며 IEX로 전환하지 않는다. 실패 시 일부 원본만 남을 수 있고 완료 manifest는 없다. 재실행은 기존 원본을 보존하는 새 출력 디렉터리를 사용한다.
+
+원본/실제 수신시각/해시를 비공개 저장한다. `DOWNLOADED`·`NOT_EVALUATED`는 원본 수집만 뜻한다. 이후 정규장 필터·봉 라벨·중복/누락·기업행동 검증과 평가기 연결이 필요하다. P3 수용/P5 진입 조건은 그대로다.
