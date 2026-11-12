@@ -45,7 +45,7 @@ DATA_FIELDS = {
     'split': {'ratio'},
 }
 ENDPOINTS = {
-    'bar': {'kr_bars', 'us_bars'},
+    'bar': {'kr_bars', 'us_bars', 'kr_history', 'us_history'},
     'quote': {'kr_orderbook', 'us_orderbook'},
     'split': {'corporate_action'},
 }
