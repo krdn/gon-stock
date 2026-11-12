@@ -11,6 +11,7 @@
 - [공식 자료 조사](docs/research/evidence.md)
 - [GitHub 운영](.github/project-management.md)
 - [현재 상태](docs/STATE.md)
+- [P3 평가 계약](docs/plans/p3-evaluation.md) · [연구·미래 수집 실행](docs/operations/p3-research.md)
 
 KIS 읽기 전용 클라이언트와 [모의투자 조회 CLI](docs/operations/kis-readonly.md)로 6종 실제 조회를 확인했다.
 [LLM 프록시 CLI](docs/operations/llm-proxy.md)는 요청·반환 모델 일치와 실패를 구분한다.

@@ -78,7 +78,7 @@ def test_us_bars_real_only_contract_and_event_time():
             'NMIN': '1',
             'PINC': '1',
             'NEXT': '',
-            'NREC': '1',
+            'NREC': '2',
             'FILL': '',
             'KEYB': '',
         }
