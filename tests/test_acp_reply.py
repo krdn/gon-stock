@@ -100,3 +100,81 @@ def test_uncertain_readback_keeps_attempt_and_blocks_retry(tmp_path, monkeypatch
     with pytest.raises(ValueError, match='already_attempted'):
         bridge.publish(ROOT, 'result')
     assert len(writes) == 1
+
+
+def test_counter_uses_fable_adapter_without_tools(tmp_path):
+    import os
+    import sys
+
+    records = tmp_path / '.local/share/buzz-gon/agents'
+    records.mkdir(parents=True)
+    (records / 'gon-stock-counter.json').write_text(
+        json.dumps({'channel': CHANNEL, 'owner': OWNER, 'pubkey': AGENT})
+    )
+    adapter = tmp_path / 'claude-agent-acp'
+    adapter.write_text(
+        '#!/usr/bin/python3\nimport json,sys\n'
+        'for line in sys.stdin:\n'
+        ' v=json.loads(line); print(json.dumps({"id":v["id"],"result":v}),flush=True)\n'
+    )
+    adapter.chmod(0o700)
+    env = dict(os.environ, HOME=str(tmp_path), PATH=str(tmp_path) + ':' + os.environ['PATH'])
+    env['PYTHONPATH'] = str(__import__('pathlib').Path(api().__file__).parents[1])
+    request = {
+        'jsonrpc': '2.0',
+        'id': 1,
+        'method': 'session/new',
+        'params': {
+            'cwd': str(tmp_path),
+            'mcpServers': [{'name': 'unwanted'}],
+            '_meta': {'claudeCode': {'options': {'tools': ['Bash'], 'model': 'wrong'}}},
+        },
+    }
+    result = subprocess.run(
+        [sys.executable, '-m', 'gon_stock.acp_reply', 'counter'],
+        cwd=tmp_path,
+        env=env,
+        input=json.dumps(request) + '\n',
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert result.returncode == 0, result.stderr
+    params = json.loads(result.stdout)['result']['params']
+    assert params['mcpServers'] == []
+    options = params['_meta']['claudeCode']['options']
+    assert options['settingSources'] == []
+    assert options['strictMcpConfig'] is True
+    assert options['tools'] == []
+    assert options['model'] == 'claude-fable-5-2'
+    assert options['effort'] == 'high'
+    assert options['allowDangerouslySkipPermissions'] is False
+
+
+def test_counter_rejects_resume_and_model_changes():
+    for method, params in [
+        ('session/load', {}),
+        ('session/resume', {}),
+        ('session/fork', {}),
+        ('session/set_model', {'modelId': 'wrong'}),
+        ('session/set_config_option', {'configId': 'model', 'value': 'wrong'}),
+        ('session/set_mode', {'modeId': 'bypassPermissions'}),
+    ]:
+        with pytest.raises(ValueError, match='counter_method_denied'):
+            api().restrict_counter({'method': method, 'params': params})
+
+
+def test_counter_preserves_custom_prompt_only():
+    value = {
+        'method': 'session/new',
+        'params': {
+            '_meta': {
+                'systemPrompt': 'dedicated counter rules',
+                'other': 'untrusted',
+                'claudeCode': {'options': {'tools': ['Bash']}},
+            }
+        },
+    }
+    api().restrict_counter(value)
+    assert value['params']['_meta']['systemPrompt'] == 'dedicated counter rules'
+    assert 'other' not in value['params']['_meta']
