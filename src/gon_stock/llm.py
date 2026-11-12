@@ -1,7 +1,7 @@
 import ipaddress
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from urllib.parse import urlsplit
 
 import httpx
@@ -23,6 +23,11 @@ class ProbeResult:
     @property
     def model_matches(self):
         return self.requested_model == self.returned_model
+
+
+@dataclass(frozen=True)
+class CompletionResult(ProbeResult):
+    content: str = field(repr=False)
 
 
 class ProxyClient:
@@ -112,6 +117,33 @@ class ProxyClient:
         return list(self._models)
 
     def probe(self, model: str) -> ProbeResult:
+        result = self.complete(
+            model, [{'role': 'user', 'content': 'Reply with OK only.'}], max_tokens=256
+        )
+        return ProbeResult(
+            result.requested_model,
+            result.returned_model,
+            result.elapsed_seconds,
+            result.total_tokens,
+        )
+
+    def complete(self, model: str, messages: list[dict], *, max_tokens=2048) -> CompletionResult:
+        if (
+            not isinstance(messages, list)
+            or not 1 <= len(messages) <= 16
+            or any(
+                not isinstance(message, dict)
+                or set(message) != {'role', 'content'}
+                or message['role'] not in ('system', 'user', 'assistant')
+                or not isinstance(message['content'], str)
+                or not message['content'].strip()
+                for message in messages
+            )
+            or sum(len(message['content']) for message in messages) > 64000
+            or type(max_tokens) is not int
+            or not 1 <= max_tokens <= 8192
+        ):
+            raise ProxyFailure('invalid_messages')
         if not self._valid_model(model):
             raise ProxyFailure('invalid_model')
         if model not in self.models():
@@ -122,9 +154,9 @@ class ProxyClient:
             'chat/completions',
             json={
                 'model': model,
-                'messages': [{'role': 'user', 'content': 'Reply with OK only.'}],
+                'messages': messages,
                 'stream': False,
-                'max_tokens': 256,
+                'max_tokens': max_tokens,
             },
         )
         elapsed = time.monotonic() - started
@@ -147,4 +179,4 @@ class ProxyClient:
         tokens = usage.get('total_tokens') if isinstance(usage, dict) else None
         if tokens is not None and (type(tokens) is not int or tokens < 0):
             raise ProxyFailure('invalid_response')
-        return ProbeResult(model, returned, elapsed, tokens)
+        return CompletionResult(model, returned, elapsed, tokens, content)

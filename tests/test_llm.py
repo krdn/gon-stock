@@ -86,6 +86,48 @@ def test_alias_mismatch_is_reported_and_not_silently_accepted():
     assert result.requested_model == 'requested' and result.returned_model == 'different'
 
 
+def test_completion_returns_content_and_trace_without_tools_or_response_repr():
+    messages = [
+        {'role': 'system', 'content': 'Return JSON.'},
+        {'role': 'user', 'content': 'fixture'},
+    ]
+
+    def handler(request):
+        if request.url.path == '/v1/models':
+            return httpx.Response(200, json={'data': [{'id': 'candidate-model'}]})
+        body = json.loads(request.content)
+        assert body['messages'] == messages
+        assert body['max_tokens'] == 2048
+        assert 'tools' not in body and body['stream'] is False
+        return httpx.Response(
+            200,
+            json={
+                'model': 'candidate-model',
+                'choices': [
+                    {'message': {'content': '{"private":"fixture"}'}, 'finish_reason': 'stop'}
+                ],
+            },
+        )
+
+    with make(handler) as client:
+        result = client.complete('candidate-model', messages)
+    assert result.content == '{"private":"fixture"}'
+    assert result.model_matches
+    assert 'private' not in repr(result)
+
+
+def test_completion_rejects_invalid_messages_before_network():
+    with make(lambda _: pytest.fail('unexpected network')) as client:
+        for messages in (
+            [],
+            [{'role': 'tool', 'content': 'x'}],
+            [{'role': 'user', 'content': 'x', 'tools': ['order']}],
+            [{'role': 'user', 'content': 'x' * 64001}],
+        ):
+            with pytest.raises(ProxyFailure):
+                client.complete('candidate-model', messages)
+
+
 @pytest.mark.parametrize(
     ('response', 'code'),
     [
