@@ -52,11 +52,26 @@ def main():
     args = parser.parse_args()
     if args.output.exists():
         parser.error('기존 검증 파일을 덮어쓰지 않습니다.')
+    if not args.output.parent.is_dir():
+        parser.error('검증 파일을 저장할 디렉터리가 없습니다.')
     result = {'status': 'FAIL', 'criteria': 'kr-bar-v1', 'environment': 'mock'}
     try:
         sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
-        dirty = subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', 'src/gon_stock'])
-        if sha != args.expected_sha or dirty.returncode != 0:
+        dirty = subprocess.run(
+            [
+                'git',
+                'status',
+                '--porcelain',
+                '--untracked-files=all',
+                '--',
+                ':/src/gon_stock',
+                ':/pyproject.toml',
+                ':/uv.lock',
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if sha != args.expected_sha or dirty.returncode != 0 or dirty.stdout:
             raise ConnectionFailure('source_changed')
         result['source_sha'] = sha
         with KisReadClient(credentials('mock'), 'mock') as client:
@@ -67,6 +82,7 @@ def main():
     except (OSError, subprocess.SubprocessError):
         result['code'] = 'local_environment_error'
     result['checked_at'] = datetime.now(UTC).isoformat()
+    print(json.dumps(result, ensure_ascii=False), flush=True)
     try:
         with args.output.open('x') as stream:
             json.dump(result, stream, ensure_ascii=False, indent=2)
@@ -74,7 +90,6 @@ def main():
     except OSError:
         print('검증 파일 저장 실패')
         raise SystemExit(1) from None
-    print(json.dumps(result, ensure_ascii=False))
     if result['status'] != 'PASS':
         raise SystemExit(1)
 

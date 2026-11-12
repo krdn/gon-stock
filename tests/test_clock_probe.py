@@ -1,9 +1,13 @@
+import json
+import os
+import subprocess
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import httpx
 import pytest
 
-from gon_stock.clock_probe import observe_twice
+from gon_stock.clock_probe import main, observe_twice
 from gon_stock.kis import ConnectionFailure, Credentials, KisReadClient
 from gon_stock.market_clock import select_completed_domestic_bar
 
@@ -105,3 +109,75 @@ def test_outside_observation_window_makes_no_request(monkeypatch):
         with pytest.raises(ConnectionFailure, match='outside_observation_window'):
             observe_twice(client)
     assert calls == []
+
+
+@pytest.mark.parametrize('change', ['tracked', 'untracked', 'lock'])
+def test_main_detects_source_changes_from_subdirectory(tmp_path, monkeypatch, change):
+    env = {**os.environ, 'GIT_CONFIG_GLOBAL': os.devnull, 'GIT_CONFIG_NOSYSTEM': '1'}
+
+    def git(*args):
+        return subprocess.check_output(['git', *args], cwd=tmp_path, env=env, text=True).strip()
+
+    git('init', '-q')
+    source = tmp_path / 'src/gon_stock'
+    source.mkdir(parents=True)
+    (source / 'module.py').write_text('VALUE = 1\n')
+    (tmp_path / 'uv.lock').write_text('version = 1\n')
+    git('add', '.')
+    git('-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'fixture')
+    sha = git('rev-parse', 'HEAD')
+    target = {
+        'tracked': source / 'module.py',
+        'untracked': source / 'extra.py',
+        'lock': tmp_path / 'uv.lock',
+    }[change]
+    target.write_text('changed\n')
+    output = tmp_path / 'result.json'
+    monkeypatch.chdir(source)
+    monkeypatch.setattr('sys.argv', ['clock-probe', '--expected-sha', sha, '--output', str(output)])
+    original_run = subprocess.run
+    secret_calls = []
+
+    def run(args, **kwargs):
+        if args[0] == 'secret-tool':
+            secret_calls.append(args)
+            return subprocess.CompletedProcess(args, 1, '', '')
+        return original_run(args, **kwargs)
+
+    monkeypatch.setattr(subprocess, 'run', run)
+    with pytest.raises(SystemExit):
+        main()
+    assert json.loads(output.read_text())['code'] == 'source_changed'
+    assert secret_calls == []
+
+
+def test_main_sha_mismatch_remains_visible_when_output_write_fails(tmp_path, monkeypatch, capsys):
+    output = tmp_path / 'result.json'
+    monkeypatch.setattr(
+        'sys.argv', ['clock-probe', '--expected-sha', 'wrong', '--output', str(output)]
+    )
+    original_open = Path.open
+
+    def fail_output(path, *args, **kwargs):
+        if path == output:
+            raise PermissionError('unwritable')
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, 'open', fail_output)
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 1
+    summary = capsys.readouterr().out.splitlines()[0]
+    assert json.loads(summary)['code'] == 'source_changed'
+
+
+def test_main_refuses_existing_result_file(tmp_path, monkeypatch):
+    output = tmp_path / 'result.json'
+    output.write_text('preserve')
+    monkeypatch.setattr(
+        'sys.argv', ['clock-probe', '--expected-sha', 'wrong', '--output', str(output)]
+    )
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 2
+    assert output.read_text() == 'preserve'
