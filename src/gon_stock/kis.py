@@ -33,6 +33,14 @@ class ReadResult:
 
 
 ROUTES = {
+    'kr_history': (
+        '/uapi/domestic-stock/v1/quotations/inquire-time-dailychartprice',
+        'FHKST03010230',
+    ),
+    'us_history': (
+        '/uapi/overseas-price/v1/quotations/inquire-time-itemchartprice',
+        'HHDFS76950200',
+    ),
     'us_bars': (
         '/uapi/overseas-price/v1/quotations/inquire-time-itemchartprice',
         'HHDFS76950200',
@@ -159,11 +167,14 @@ class KisReadClient:
     def _params(self, operation, args):
         if operation not in ROUTES:
             raise ConnectionFailure('operation_not_allowed')
-        if operation == 'us_bars' and self._environment != 'real':
+        if operation in ('us_bars', 'kr_history', 'us_history') and self._environment != 'real':
             raise ConnectionFailure('unsupported_environment')
         holdings = operation.endswith('holdings')
         us = operation.startswith('us_')
         allowed = ({'exchange'} if us else set()) | (set() if holdings else {'symbol'})
+        historical = operation.endswith('_history')
+        if historical:
+            allowed.add('before')
         if set(args) != allowed or any(not isinstance(v, str) for v in args.values()):
             raise ConnectionFailure('invalid_request')
         if us and args['exchange'] not in (
@@ -173,6 +184,38 @@ class KisReadClient:
         if not holdings:
             if not re.fullmatch(r'[A-Z][A-Z0-9.\-]{0,15}' if us else r'[0-9]{6}', args['symbol']):
                 raise ConnectionFailure('invalid_request')
+            if historical:
+                before = args['before']
+                if not re.fullmatch(r'[0-9]{12}00', before):
+                    raise ConnectionFailure('invalid_request')
+                try:
+                    cursor = datetime.strptime(before, '%Y%m%d%H%M%S').replace(
+                        tzinfo=ZoneInfo('America/New_York' if us else 'Asia/Seoul')
+                    )
+                except ValueError:
+                    raise ConnectionFailure('invalid_request') from None
+                if cursor >= datetime.now(UTC):
+                    raise ConnectionFailure('invalid_request')
+                if us:
+                    return {
+                        'AUTH': '',
+                        'EXCD': args['exchange'],
+                        'SYMB': args['symbol'],
+                        'NMIN': '1',
+                        'PINC': '1',
+                        'NEXT': '1',
+                        'NREC': '120',
+                        'FILL': '',
+                        'KEYB': before,
+                    }
+                return {
+                    'FID_COND_MRKT_DIV_CODE': 'J',
+                    'FID_INPUT_ISCD': args['symbol'],
+                    'FID_INPUT_DATE_1': before[:8],
+                    'FID_INPUT_HOUR_1': before[8:],
+                    'FID_PW_DATA_INCU_YN': 'Y',
+                    'FID_FAKE_TICK_INCU_YN': 'N',
+                }
             if us:
                 if operation == 'us_bars':
                     return {
@@ -245,7 +288,7 @@ class KisReadClient:
             raise ConnectionFailure('broker_rejected')
         if operation.endswith('quote'):
             valid = isinstance(data.get('output'), dict) and bool(data['output'])
-        elif operation in ('kr_bars', 'us_bars'):
+        elif operation in ('kr_bars', 'us_bars', 'kr_history', 'us_history'):
             valid = isinstance(data.get('output1'), dict) and isinstance(data.get('output2'), list)
         elif operation.endswith('holdings'):
             valid = isinstance(data.get('output1'), list) and isinstance(
@@ -261,7 +304,7 @@ class KisReadClient:
             raise ConnectionFailure('invalid_response')
         more = headers.get('tr_cont') in ('F', 'M')
         received_at = datetime.now(UTC)
-        clock = read_market_clock(operation, data)
+        clock = read_market_clock(operation.replace('_history', '_bars'), data)
         if clock.event_time and clock.event_time > received_at:
             clock = replace(clock, status='future')
         return ReadResult(data, received_at, more, event_time=clock.event_time, clock=clock)

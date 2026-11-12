@@ -132,6 +132,8 @@ def evaluate(simulation, session_days, manifest):
         }
     test_trade_days = {utc(trade['entry_at']).date().isoformat() for trade in test}
     blockers = []
+    if simulation.get('availability_mode') == 'historical_assumption':
+        blockers.append('assumed_historical_availability')
     if manifest['source_kind'] != 'observed' or manifest['environment'] != 'real':
         blockers.append('synthetic_or_unverified_history')
     blockers.extend('unverified_' + key for key in sorted(verified) if not verified[key])

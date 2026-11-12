@@ -75,7 +75,11 @@ def _outcome(outcomes, entry_at, closed, costs):
     return None
 
 
-def backtest(rows, calendar, universe, benchmark, costs):
+def backtest(rows, calendar, universe, benchmark, costs, *, historical_delay_seconds=None):
+    if historical_delay_seconds is not None and (
+        type(historical_delay_seconds) is not int or not 60 <= historical_delay_seconds <= 120
+    ):
+        raise ValueError('invalid_history_delay')
     cost = roundtrip_cost(costs)
     benchmark = instrument(benchmark)
     universe = [instrument(value) for value in universe]
@@ -101,6 +105,13 @@ def backtest(rows, calendar, universe, benchmark, costs):
             raise ValueError('unsupported_corporate_revision')
         if value['kind'] != 'bar':
             continue
+        if historical_delay_seconds is not None:
+            if value['endpoint'] not in ('kr_history', 'us_history'):
+                raise ValueError('history_only')
+            if value['event_time'] is not None:
+                value['received_at'] = (
+                    utc(value['event_time']) + timedelta(seconds=historical_delay_seconds)
+                ).isoformat()
         observations.append({'receipt_seq': row['receipt_seq'], **value})
     if len({(row['source'], row['environment']) for row in observations}) > 1:
         raise ValueError('mixed_streams')
@@ -182,6 +193,10 @@ def backtest(rows, calendar, universe, benchmark, costs):
             break
     return {
         'strategy_id': STRATEGY_ID,
+        'availability_mode': 'historical_assumption'
+        if historical_delay_seconds is not None
+        else 'observed_receipt',
+        'assumed_delay_seconds': historical_delay_seconds,
         'trades': trades,
         'unresolved': unresolved,
         'no_entry_bar': no_entry,
