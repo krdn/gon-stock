@@ -1,6 +1,6 @@
 # 현재 상태
 
-2026-11-12: P1·P2 위임 수용 완료. P2 PR #19 병합 main `5c161ab`, main CI PASS와 검증 소스 동일성 확인.
+2026-11-12: P1·P2 위임 수용 완료. P3 구현 PR #21 병합 main `c017d8e`, main CI PASS. P3 실제 성과 수용은 자료 부족으로 보류.
 
 - KIS 실제 조회: 국내·미국 현재가·호가·잔고 6종 성공. 미국 잔고는 NASDAQ 범위, 잔고 각 1페이지.
 - 인증: KIS와 프록시 키는 OS 인증 저장소에 등록. 기존 계좌 연결 차단은 해결됐다.
@@ -11,9 +11,10 @@
 - 국내 분봉: 수정 SHA `25d72a8`의 모의 2회 관측에서 완료 분봉 09:36→09:38 KST 전진·양의 거래량 확인. kr-bar-v1 PASS이며 거래소 실체결·신선도 증명은 아니다.
 - 미국 분봉: 정식 `us_bars`는 명세의 한국·뉴욕 시각 일치를 검사하고 UTC 시각을 출력한다. 미래·불일치 시각은 event_time=null이다. 신선도는 계속 unverified다.
 - P2: 관심 종목·DuckDB/Parquet 저장·시점 재생·품질 구현. 150 tests·Fable 수정분 리뷰·PR/main CI PASS. [위임 수용](https://github.com/krdn/gon-stock/issues/6#issuecomment-6811449518), [검증과 한계](evidence/P2/validation.md).
-- P3 구현: [계약](plans/p3-evaluation.md)에 따라 장중 기준 전략·비용·시간순 분리·확률 보정·비공개 평가 CLI·미래 수집기를 구현했다. [실행 절차](operations/p3-research.md). 175 tests·Ruff·format·build PASS, Fable 수정분 리뷰 PASS. [검증 기록](evidence/P3/implementation.md). 병합·실제 수집은 진행 중이다.
+- P3 구현: [계약](plans/p3-evaluation.md)에 따라 장중 기준 전략·비용·시간순 분리·확률 보정·비공개 평가 CLI·미래 수집기를 구현했다. [실행 절차](operations/p3-research.md). 175 tests·Ruff·format·build PASS, Fable 수정분 리뷰 PASS. [검증 기록](evidence/P3/implementation.md). PR #21 병합 후 main CI PASS, 리뷰 소스 동일성 확인.
 - P3 데이터: 사용자가 과거 시점 자료가 없음을 확인하고 미래 수집 자료로 검증하기로 했다. 현재 31행은 성과 평가용 자료가 아니다. 실제 성과·P3 수용·P4 진입은 자료와 품질 근거가 충분할 때까지 보류한다.
-- 다음 행동: [P3 #7](https://github.com/krdn/gon-stock/issues/7) 리뷰 지적 처리·CI·병합 후 고정 SHA로 읽기 전용 수집을 시작한다. 수집 서비스 시작과 장중 실제 저장 성공을 구분한다.
+- 미래 수집: 고정 SHA `c017d8e` 사용자 서비스 2개 활성. 국내 두 종목에서 10:57/10:58 KST 연속 저장, 중단 후 DB 재열기 보존과 재시작 수집 확인. 미국은 장외 예약만 확인했고 장중 수집은 미검증이다. 종료 한도 2026-11-19 09:00 KST, 오류 시 중단, 수집 중 호스트 절전 방지.
+- 다음 행동: [P3 #7](https://github.com/krdn/gon-stock/issues/7) 미국 첫 정규장 실제 분봉·시각 전진을 확인하고 미래 자료의 누락·품질 근거를 쌓는다. 수집량만으로 성과 수용하지 않으며 P4는 보류한다.
 - P5 전 필수: 실제 분봉 라벨·누락·연간 거래소 공지·서버 시계 오차 확인. P3는 현재 관심 목록을 과거 종목군으로 사용하지 않고 정규장 밖 자료를 거래 입력에서 제외한다.
 - 후속 소유: 호가 일자·시간대와 신선도는 P2 품질/P5 운용, Argon 동등성은 P3 선정에서 검사한다. Argon 불일치 FAIL을 유지한다.
 - 코드 리뷰: 로컬 Fable 5.2 high 요청, canonicalModel·firstParty 반환 확인. 본체·수정분 PASS. 97 tests·프로젝트 Ruff·format·build·docs PASS. [관측과 비차단 지적 처리](evidence/P1/acceptance.md).
