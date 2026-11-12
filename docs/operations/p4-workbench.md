@@ -10,7 +10,7 @@ uv run gon-stock-workbench serve --port 8765
 ```
 
 현재 병합 SHA 고정 실행본은 `gon-stock-p4-workbench` 사용자 서비스로 실행 중이다.
-Fable 한도 해제 실호출 전에는 웹 연구 요청을 일시중단한다. 관심 목록과 저장 상태는 열람할 수 있다.
+2026-11-12 13:56 KST Fable 실호출과 Astra→Fable 카드 저장을 확인해 웹 연구 요청을 재개했다.
 브라우저에서 `http://127.0.0.1:8765`를 연다. 관심 종목을 등록하고 질문·HTTPS 출처 URL·발표 시각·
 원문 발췌를 입력한다. 브라우저는 현재 시각을 관측/기준시각으로 기록하며 유효기간은 10분이다.
 시간대가 있는 CLI 입력은 다음과 같이 실행한다.
@@ -64,15 +64,18 @@ buzz-gon channels create --name gon-stock-ops --type stream --visibility private
 부분 전송 실패도 재시도하지 않는다. 모델의 ACP 도구·권한 요청을 거부하며 Buzz 인증값은
 하위 모델 프로세스에 넘기지 않는다. 최종 텍스트만 전송하고 원격 본문·작성자·스레드를 재조회한다.
 
-[사용자 임시 승인](https://github.com/krdn/gon-stock/issues/4#issuecomment-6813761223)에 따라
-전략은 `codex-acp`의 Astra high, 반론은 Fable 한도 해제 전 `agy acp`의 Argon high다.
+전략은 `codex-acp`의 Astra high, 반론은 `claude-agent-acp`의 Fable 5.2 high다.
+[사용자 임시 승인](https://github.com/krdn/gon-stock/issues/4#issuecomment-6813761223)의 Argon 사용은
+Fable 정상화 확인 후 종료했다. 반론 세션은 내장 도구와 MCP 서버·사용자/프로젝트 설정 로딩을 비우고 권한 우회를 허용하지 않는다.
+기존 세션 재개는 거부하며 새 요청으로 시작한다. 검증 서비스는 결과 확인 후 중단했다.
 ACP 모델 선택 성공은 서버 내부 모델의 독립 증명이 아니다. 기존 프록시 Argon 불일치는 미해결이다.
 로컬 웹 작업대의 Astra→Fable 프록시 경로와 이 Buzz 런타임은 별개다.
 
 현재 로컬 실행기는 `.private/p4/run-buzz-native.py`이며 인수는 `strategy` 또는 `counter`다.
-검증용 사용자 서비스는 `gon-stock-p4-strategy`, `gon-stock-p4-counter`다.
+복귀 검증용 사용자 서비스는 `gon-stock-p4-strategy-recovery`, `gon-stock-p4-counter-fable`다.
+실행기 PATH에는 설치된 Buzz `node-tools/bin`을 포함하고, `CLAUDE_CODE_EXECUTABLE`은 기존 Claude CLI를 지정한다.
 15분 미사용 또는 서비스 시작 후 30분에 종료하며 자동 재시작하지 않는다.
-중단은 `systemctl --user stop gon-stock-p4-strategy gon-stock-p4-counter`로 한다.
+중단은 `systemctl --user stop gon-stock-p4-strategy-recovery gon-stock-p4-counter-fable`로 한다.
 재개 시 신원/채널 검사와 새 요청 왕복을 다시 확인한다. P3 수집 서비스와 독립적이다.
 
 비공개 `.private/p4/buzz.json`에는 `relay`(HTTPS URL), `sender_pubkey`(전송 주체의 64자리 공개키),

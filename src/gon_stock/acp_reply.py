@@ -104,6 +104,39 @@ class Replies:
             raise
 
 
+def restrict_counter(value):
+    method = value.get('method')
+    params = value.get('params', {})
+    if method == 'session/new':
+        custom_prompt = params.get('_meta', {}).get('systemPrompt')
+        params['mcpServers'] = []
+        params['_meta'] = {
+            'claudeCode': {
+                'options': {
+                    'tools': [],
+                    'model': 'claude-fable-5-2',
+                    'effort': 'high',
+                    'settingSources': [],
+                    'strictMcpConfig': True,
+                    'allowDangerouslySkipPermissions': False,
+                }
+            }
+        }
+        if isinstance(custom_prompt, str):
+            params['_meta']['systemPrompt'] = custom_prompt
+    elif method == 'session/set_model' and params.get('modelId') == 'claude-fable-5-2':
+        return
+    elif method == 'session/set_mode' and params.get('modeId') == 'plan':
+        return
+    elif method == 'session/set_config_option' and (
+        params.get('configId'),
+        params.get('value'),
+    ) in (('effort', 'high'), ('model', 'claude-fable-5-2')):
+        return
+    elif method not in (None, 'initialize', 'session/prompt', 'session/cancel'):
+        raise ValueError('counter_method_denied')
+
+
 def main():
     role = sys.argv[1]
     if role not in ('strategy', 'counter'):
@@ -117,8 +150,10 @@ def main():
         record['pubkey'],
         private_path('.private/replies.sqlite'),
     )
-    command = ['codex-acp'] if role == 'strategy' else ['agy', 'acp', '--sandbox']
+    command = ['codex-acp'] if role == 'strategy' else ['claude-agent-acp']
     env = {k: v for k, v in os.environ.items() if not k.startswith('BUZZ_')}
+    if role == 'counter':
+        env = {k: v for k, v in env.items() if not k.startswith(('ANTHROPIC_', 'CLAUDE_CODE_USE_'))}
     child = subprocess.Popen(
         command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env
     )
@@ -138,6 +173,19 @@ def main():
         try:
             for line in sys.stdin:
                 value = json.loads(line)
+                if role == 'counter':
+                    try:
+                        restrict_counter(value)
+                    except ValueError:
+                        if 'id' in value:
+                            output(
+                                {
+                                    'jsonrpc': '2.0',
+                                    'id': value['id'],
+                                    'error': {'code': -32601, 'message': 'counter_method_denied'},
+                                }
+                            )
+                        continue
                 if value.get('method') == 'session/prompt':
                     params = value['params']
                     prompt = '\n'.join(

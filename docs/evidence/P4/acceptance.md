@@ -23,3 +23,16 @@ Fable 한도 해제는 안내 시각만으로 확정하지 않고 실제 호출�
 
 P3 실제 성과 수용은 미래 자료·품질·표본 근거 대기이며 P5 진입은 계속 보류한다.
 [상세 검사](implementation.md) · [실행과 중단](../../operations/p4-workbench.md).
+
+## Fable 복귀 — 2026-11-12 14:00 KST
+
+- 로컬 CLI: `claude-fable-5-2` high 요청, READY·canonicalModel 일치·firstParty 확인. 한도 해제 예정 시각이 아닌 실제 응답으로 판단했다.
+- 웹: 프록시 요청·반환 ID 일치, 새 합성 요청의 Astra→Fable 두 응답·관망 카드 저장·브라우저 표시 PASS. 재시작 후 카드·재개 상태 보존 PASS.
+- Buzz: 기존 Argon 검증 서비스 종료 확인. Fable 어댑터로 교체하고 새 스레드의 전략·반론 작성자/채널/본문/연결을 원격 재조회했다. 반론 delivery=verified, 세션 반환 모델 `claude-fable-5-2`, 도구 사용 0.
+- 반론 세션 생성 시 도구/MCP 서버를 비우고 Fable 5.2 high를 고정한다. 위조된 세션 옵션을 대체하는 subprocess 경계 검사 포함 211 tests PASS. 프로젝트 Ruff·format·build PASS. 저장소 전체 Ruff에서는 기존 `scripts/check_docs.py` import 순서 지적이 남아 있으며 이 변경에서 수정하지 않았다.
+- 검증 입력은 가상 종목·합성 출처다. 실제 연구 품질·성과·자동 Buzz→웹 카드 연동의 증거는 아니다. 검증 후 네이티브 두 서비스를 중단했다. 웹 작업대와 P3 수집은 유지한다. P3/P5 경계는 유지한다.
+
+- Fable 최초 리뷰의 세션 재개 우회·전역 설정 유입 지적을 수정했다. 허용한 ACP 메서드만 전달하고 모델/effort 변경을 제한하며 `settingSources=[]`, `strictMcpConfig=true`를 적용한다. 전용 system prompt 문자열은 보존하고 counter 하위 프로세스의 `ANTHROPIC_*`·`CLAUDE_CODE_USE_*` 환경을 제거한다.
+- 수정 후 새 Buzz 반론 답글·반환 모델·도구 사용 0을 재확인했다. 별도 동일 옵션 어댑터 프로브의 init `tools=[]`, `mcp_servers=[]` 확인. 내장 plugin 4개는 남아 있다. 어댑터 0.84.0, Claude CLI 2.1.322. 프로브 사용량에는 Fable 외 보조 Haiku 5.5가 함께 기록돼 전체 내부 호출의 Fable 전용성은 주장하지 않는다.
+
+- Fable 5.2 high 수정분 리뷰 PASS, canonicalModel·firstParty 및 리뷰된 코드/테스트/비공개 실행기 해시 일치 확인. 문자열 외 system prompt 거부와 환경 필터의 별도 회귀 검사는 비차단 후속 항목이다.

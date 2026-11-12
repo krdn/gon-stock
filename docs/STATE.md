@@ -18,7 +18,7 @@
 - P4 로컬 구현: 연구 작업대·관심 목록·검토·관망 카드·중단 상태, 합성 입력의 실제 프록시 응답·카드 저장·화면 검증 PASS.
 - P4 Buzz: 사용자 제공 CLI로 전용 신원 2개 생성·소유자 서명·가입 검증. Astra 전략→agy Argon 반론의 실제 같은 스레드 응답과 운영자가 요약한 관망 카드·알림 재조회 PASS. 웹 카드 자동 연동·상시 운용은 별개다.
 - P4 리뷰: Fable 429 이후 [사용자 임시 승인](https://github.com/krdn/gon-stock/issues/4#issuecomment-6813761223)으로 agy Argon high 사용. 첫 지적 수정과 208 tests·Ruff·format·build PASS. 수정분 리뷰 PASS·리뷰 소스 동일성 확인. PR #23 병합 main `b8e8ca8`, PR/main CI PASS. [P4 최소 기술 검증 위임 수용](evidence/P4/acceptance.md).
-- 다음 행동: [P3 #7](https://github.com/krdn/gon-stock/issues/7) 미래 자료와 품질 근거 확보, [P4 #8](https://github.com/krdn/gon-stock/issues/8) 제한된 기술 검증 수용 완료. Fable 한도 해제 실호출 확인 후 임시 Argon 경로를 복구한다. P5 통합 운용 진입은 P3·P4 수용 후다.
+- 다음 행동: [P3 #7](https://github.com/krdn/gon-stock/issues/7) 미래 자료와 품질 근거 확보, [P4 #8](https://github.com/krdn/gon-stock/issues/8) 제한된 기술 검증 수용 완료. Fable 복귀: 로컬 CLI canonicalModel/firstParty와 프록시 요청·반환 일치, 웹 카드 생성·브라우저 표시 PASS. Buzz 새 스레드의 Astra 전략→Fable 반론을 원격 재조회했고 반론 세션 반환 모델 Fable 5.2·도구 사용 0을 확인했다. 임시 Argon 경로 종료. P5 통합 운용 진입은 P3·P4 수용 후다.
 - P5 전 필수: 실제 분봉 라벨·누락·연간 거래소 공지·서버 시계 오차 확인. P3는 현재 관심 목록을 과거 종목군으로 사용하지 않고 정규장 밖 자료를 거래 입력에서 제외한다.
 - 후속 소유: 호가 일자·시간대와 신선도는 P2 품질/P5 운용, Argon 동등성은 P3 선정에서 검사한다. Argon 불일치 FAIL을 유지한다.
 - 코드 리뷰: 로컬 Fable 5.2 high 요청, canonicalModel·firstParty 반환 확인. 본체·수정분 PASS. 97 tests·프로젝트 Ruff·format·build·docs PASS. [관측과 비차단 지적 처리](evidence/P1/acceptance.md).
