@@ -51,17 +51,30 @@ buzz-gon channels create --name gon-stock-ops --type stream --visibility private
 ```
 
 먼저 같은 이름의 기존 채널을 조회하고 재사용 가능 여부를 확인한다. 생성 응답의 UUID를 비공개 설정에 저장한다.
-전용 에이전트는 `buzz agents draft-create --channel <UUID> --display-name <이름> --system-prompt -`로
-소유자 Desktop의 생성 폼을 요청한다. 이 경로는 에이전트 소유자 인증 태그가 필요하다.
-현재 `buzz-gon`은 Gon 사용자 인증만 전달하며 `BUZZ_AUTH_TAG`를 제거한다. 따라서 실제 시도는
-`agent draft requests require BUZZ_AUTH_TAG`로 거부됐다. 일반 채널 인증 성공과 에이전트 생성 권한은 다르다.
-초안 생성은 실제 저장·모델 매핑·실행 증거가 아니다.
-이름은 `GON-STOCK · 전략`, `GON-STOCK · 반론`으로 기존 에이전트와 구분한다.
-전략은 Astra, 반론은 Fable 5.2를 요청하며 실제 반환 모델을 대조한다.
-리서치 Argon의 ID 불일치는 아직 해결되지 않았다. 다른 모델을 Argon으로 등록하지 않는다.
+전용 신원은 사용자가 추가한 `buzz-gon agents create --name <이름> --channel <UUID>
+--system-prompt-file <파일>`로 생성하고 `agents inspect --name <이름>`으로 재조회한다.
+이 경로는 Orca·Desktop 없이 소유자 서명·프로필·가입을 검증한다. 공식 `draft-create`와 별개다.
+현재 이름은 `gon-stock-strategy`, `gon-stock-counter`이며 신원·지침은
+`~/.local/share/buzz-gon/agents/`에, 키는 OS Secret Service에 있다. 기존 에이전트는 수정하지 않는다.
+
+`buzz-acp`와 `gon_stock.acp_reply`가 전용 신원으로 응답한다. 소유자 멘션만 받으며
+고정 연구 채널·소유자 작성 root·15분 이내 요청을 확인한다. 스레드당 역할별 한 번만 게시하고
+부분 전송 실패도 재시도하지 않는다. 모델의 ACP 도구·권한 요청을 거부하며 Buzz 인증값은
+하위 모델 프로세스에 넘기지 않는다. 최종 텍스트만 전송하고 원격 본문·작성자·스레드를 재조회한다.
+
+[사용자 임시 승인](https://github.com/krdn/gon-stock/issues/4#issuecomment-6813761223)에 따라
+전략은 `codex-acp`의 Astra high, 반론은 Fable 한도 해제 전 `agy acp`의 Argon high다.
+ACP 모델 선택 성공은 서버 내부 모델의 독립 증명이 아니다. 기존 프록시 Argon 불일치는 미해결이다.
+로컬 웹 작업대의 Astra→Fable 프록시 경로와 이 Buzz 런타임은 별개다.
+
+현재 로컬 실행기는 `.private/p4/run-buzz-native.py`이며 인수는 `strategy` 또는 `counter`다.
+검증용 사용자 서비스는 `gon-stock-p4-strategy`, `gon-stock-p4-counter`다.
+15분 미사용 또는 서비스 시작 후 30분에 종료하며 자동 재시작하지 않는다.
+중단은 `systemctl --user stop gon-stock-p4-strategy gon-stock-p4-counter`로 한다.
+재개 시 신원/채널 검사와 새 요청 왕복을 다시 확인한다. P3 수집 서비스와 독립적이다.
 
 비공개 `.private/p4/buzz.json`에는 `relay`(HTTPS URL), `sender_pubkey`(전송 주체의 64자리 공개키),
-`allowed_members`(허용된 공개키 배열), `channels`(`research`, `signals`, `ops`의 UUID 매핑)를 둔다.
+`allowed_members`(공통 공개키 배열 또는 역할별 배열 객체), `channels`(`research`, `signals`, `ops`의 UUID 매핑)를 둔다.
 현재 설정에는 `"cli": "buzz-gon"`을 추가한다. 이 경로의 relay는 `https://buzz.krdn.kr`만 허용한다.
 기존 `buzz` 경로는 `cli` 생략 시 유지되며 인증된 실행 환경이 필요하다.
 키·인증 태그는 파일이나 명령 인수로 넣지 않는다.
@@ -79,5 +92,5 @@ LLM 문자열의 멘션 표기는 알림을 만들지 않도록 바꾼다. 가�
 타임아웃·부분 전송·재조회 실패는 재시도하지 않고, 비공개 delivery 기록과 실제 채널을 대조한다.
 카드가 만료됐거나 공개 채널·예상 밖 구성원이 있으면 전송하지 않는다.
 
-P4 전체 수용에는 전용 에이전트 identity 등록과 실제 같은 스레드의 요청→반론→카드 증거가 추가로 필요하다.
-로컬 모델 호출 성공과 전달 어댑터의 합성 검사는 이 조건을 대신하지 않는다.
+전용 두 신원의 실제 같은 스레드 응답과 운영자가 요약한 관망 카드·알림을 재조회했다.
+이 검증은 Buzz 응답을 웹 카드로 자동 가져오는 기능이나 상시 운용·전략 성과 검증을 뜻하지 않는다.

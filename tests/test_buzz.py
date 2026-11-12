@@ -155,3 +155,52 @@ def test_cli_configuration_cannot_silently_select_another_relay(monkeypatch, cli
     monkeypatch.delenv('BUZZ_PRIVATE_KEY', raising=False)
     with pytest.raises(ValueError, match='invalid_cli'):
         api().BuzzCLI(config() | {'cli': cli, 'relay': relay})
+
+
+def test_each_channel_can_have_its_own_allowed_members(monkeypatch):
+    process(monkeypatch)
+    runner = subprocess.run
+    agent = 'b' * 64
+
+    def run(args, **kwargs):
+        if 'members' in args and CHANNELS['research'] in args:
+            return subprocess.CompletedProcess(
+                args, 0, json.dumps([{'pubkey': SENDER}, {'pubkey': agent}]), ''
+            )
+        return runner(args, **kwargs)
+
+    monkeypatch.setattr(subprocess, 'run', run)
+    members = {role: [SENDER] for role in CHANNELS}
+    members['research'].append(agent)
+    api().BuzzCLI(config() | {'allowed_members': members}).preflight()
+    members['signals'].append(agent)
+    with pytest.raises(ValueError, match='channel_members_mismatch'):
+        api().BuzzCLI(config() | {'allowed_members': members}).preflight()
+
+
+def test_published_card_identifies_target_and_preserves_source_link(tmp_path, monkeypatch):
+    writes = process(monkeypatch)
+    with DecisionStore(tmp_path / 'state.sqlite') as store:
+        with client([{}, {}], []) as llm:
+            value = packet()
+            value['question'] = '합성 NOSTR:NPUB1test 검사'
+            value['sources'][0]['url'] = 'https://example.org/@author/post'
+            discuss(store, llm, value, now=lambda: NOW)
+        api().publish(store, api().BuzzCLI(config()), 'fixture_1', now=lambda: NOW)
+    assert 'TEST' in writes[-2] and 'XNAS' in writes[-2] and 'reviewed' in writes[-2]
+    assert 'https://example.org/@author/post' in writes[-2]
+    assert 'NOSTR:NPUB1' not in writes[0]
+
+
+def test_duplicate_delivery_does_not_call_remote_preflight(tmp_path, monkeypatch):
+    process(monkeypatch)
+    with DecisionStore(tmp_path / 'state.sqlite') as store:
+        completed(store)
+        api().publish(store, api().BuzzCLI(config()), 'fixture_1', now=lambda: NOW)
+
+        def forbidden(*args, **kwargs):
+            pytest.fail('duplicate delivery must not call Buzz')
+
+        monkeypatch.setattr(subprocess, 'run', forbidden)
+        with pytest.raises(ValueError, match='card_not_publishable'):
+            api().publish(store, api().BuzzCLI(config()), 'fixture_1', now=lambda: NOW)

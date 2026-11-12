@@ -186,3 +186,24 @@ def test_pause_during_first_model_response_prevents_counterargument(tmp_path):
             api().discuss(store, llm, packet(), now=lambda: NOW)
         assert store.runs()[0]['status'] == 'failed'
     assert len(calls) == 1
+
+
+def test_expiry_during_final_response_cannot_complete_a_card(tmp_path):
+    ticks = iter([NOW, NOW, NOW, NOW + timedelta(minutes=11)])
+    with api().DecisionStore(tmp_path / 'state.sqlite') as store, client([{}, {}], []) as llm:
+        with pytest.raises(ValueError, match='request_expired'):
+            api().discuss(store, llm, packet(), now=lambda: next(ticks))
+        assert store.get('fixture_1')['card'] is None
+        assert store.get('fixture_1')['error_code'] == 'request_expired'
+
+
+def test_unknown_model_source_is_preserved_as_model_failure(tmp_path):
+    value = answer()
+    value['source_ids'] = ['unknown']
+    with (
+        api().DecisionStore(tmp_path / 'state.sqlite') as store,
+        client([{'answer': value}], []) as llm,
+    ):
+        with pytest.raises(ValueError, match='unknown_source'):
+            api().discuss(store, llm, packet(), now=lambda: NOW)
+        assert store.get('fixture_1')['error_code'] == 'unknown_source'

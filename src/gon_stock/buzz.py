@@ -18,12 +18,15 @@ def _hex(value):
 
 
 def _plain(value):
-    return (
-        value.replace('@', '＠')
-        .replace('nostr:', 'nostr\u200b:')
-        .replace('npub1', 'npub\u200b1')
-        .replace('nprofile1', 'nprofile\u200b1')
+    return re.sub(
+        r'(?i)nostr:|npub1|nprofile1',
+        lambda match: match[0][:-1] + '\u200b' + match[0][-1],
+        value.replace('@', '＠'),
     )
+
+
+def _source_url(value):
+    return '`' + value.replace('`', '%60').replace('\n', '%0A').replace('\r', '%0D') + '`'
 
 
 class BuzzCLI:
@@ -47,13 +50,6 @@ class BuzzCLI:
             or url.fragment
         ):
             raise ValueError('invalid_relay')
-        if (
-            not _hex(config['sender_pubkey'])
-            or not isinstance(config['allowed_members'], list)
-            or not all(_hex(value) for value in config['allowed_members'])
-            or config['sender_pubkey'] not in config['allowed_members']
-        ):
-            raise ValueError('invalid_members')
         channels = config['channels']
         if not isinstance(channels, dict) or set(channels) != {'research', 'signals', 'ops'}:
             raise ValueError('invalid_channels')
@@ -63,6 +59,22 @@ class BuzzCLI:
             str(UUID(value)) != value for value in channels.values()
         ):
             raise ValueError('invalid_channels')
+        allowed = config['allowed_members']
+        if isinstance(allowed, list):
+            allowed = {role: allowed for role in channels}
+        if (
+            not _hex(config['sender_pubkey'])
+            or not isinstance(allowed, dict)
+            or set(allowed) != set(channels)
+            or any(
+                not isinstance(members, list)
+                or not all(_hex(value) for value in members)
+                or config['sender_pubkey'] not in members
+                for members in allowed.values()
+            )
+        ):
+            raise ValueError('invalid_members')
+        self.allowed_members = allowed
         cli = config.get('cli', 'buzz')
         if cli not in ('buzz', 'buzz-gon') or (
             cli == 'buzz-gon' and config['relay'] != 'https://buzz.krdn.kr'
@@ -110,7 +122,7 @@ class BuzzCLI:
             if (
                 not isinstance(members, list)
                 or any(not isinstance(row, dict) or not _hex(row.get('pubkey')) for row in members)
-                or {row['pubkey'] for row in members} != set(self.config['allowed_members'])
+                or {row['pubkey'] for row in members} != set(self.allowed_members[role])
             ):
                 raise ValueError('channel_members_mismatch')
 
@@ -150,7 +162,8 @@ def publish(store, client, request_id, *, now=lambda: datetime.now(UTC)):
     record = store.get(request_id)
     card = record['card']
     if (
-        record['status'] != 'completed'
+        record.get('delivery') is not None
+        or record['status'] != 'completed'
         or not card
         or card['order_allowed'] is not False
         or card['mode'] != 'research'
@@ -165,18 +178,23 @@ def publish(store, client, request_id, *, now=lambda: datetime.now(UTC)):
     delivery = record['delivery']
     channels = client.config['channels']
     root = None
+    target = card['instrument']['symbol'] + ' (' + card['instrument']['exchange'] + ')'
     summary = (
-        '연구 카드 · 관망 · 주문 불가\n요청 '
+        '연구 카드 · 관망 · 주문 불가\n종목 '
+        + target
+        + '\n검토 '
+        + card['discussion_status']
+        + '\n요청 '
         + request_id
         + '\n자료 기준 '
         + card['as_of']
         + '\n유효기한 '
         + card['expires_at']
         + '\n성과·확률·기대손익: 검증 대기\n'
-        + card['summary']
+        + _plain(card['summary'])
         + '\n출처(사용자 제공·사실 확인 미완료):\n'
         + '\n'.join(
-            source['id'] + ' ' + source['url'] + ' / 발표 ' + source['published_at']
+            source['id'] + ' ' + _source_url(source['url']) + ' / 발표 ' + source['published_at']
             for source in card['sources']
         )
     )
@@ -188,7 +206,10 @@ def publish(store, client, request_id, *, now=lambda: datetime.now(UTC)):
             + '요청 '
             + request_id
             + '\n'
-            + record['request']['question'],
+            + '종목 '
+            + target
+            + '\n'
+            + _plain(record['request']['question']),
         )
     ]
     for index, row in enumerate(record['rounds']):
@@ -197,16 +218,18 @@ def publish(store, client, request_id, *, now=lambda: datetime.now(UTC)):
                 f'round_{index}',
                 'research',
                 row['role']
+                + ' · 판단 '
+                + row['answer']['disposition']
                 + ' · 요청 '
                 + row['requested_model']
                 + ' / 반환 '
                 + row['returned_model']
                 + '\n'
-                + row['answer']['summary']
+                + _plain(row['answer']['summary'])
                 + '\n위험: '
-                + ' / '.join(row['answer']['risks'])
+                + _plain(' / '.join(row['answer']['risks']))
                 + '\n무효화: '
-                + ' / '.join(row['answer']['invalidation']),
+                + _plain(' / '.join(row['answer']['invalidation'])),
             )
         )
     messages += [
@@ -222,7 +245,6 @@ def publish(store, client, request_id, *, now=lambda: datetime.now(UTC)):
         for label, destination, text in messages:
             if utc(now()) >= utc(card['expires_at']):
                 raise ValueError('card_expired_during_delivery')
-            text = _plain(text)
             channel = channels[destination]
             reply = root if destination == 'research' else None
             event = {

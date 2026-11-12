@@ -7,13 +7,15 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from gon_stock.data_cli import private_path
-from gon_stock.decisions import DecisionStore, discuss, validate_packet
+from gon_stock.decisions import DISCUSSION_ERRORS, DecisionStore, discuss, validate_packet
 from gon_stock.event_store import canonical, digest
 from gon_stock.llm import ProxyClient, ProxyFailure
 from gon_stock.llm_cli import load_settings
 
 
 def execute(store, packet, settings):
+    if store.paused():
+        raise ValueError('research_paused')
     packet = validate_packet(packet, datetime.now(UTC))
     base, key = load_settings(settings)
     with ProxyClient(base, key) as client:
@@ -135,7 +137,15 @@ def make_server(db_path, settings, *, port=8765):
                 self.send(200, {'status': 'ok'})
             except ProxyFailure as error:
                 self.send(502, {'error': error.code})
-            except (ValueError, TypeError, KeyError, OverflowError, OSError, sqlite3.Error):
+            except ValueError as error:
+                code = str(error)
+                if code in ('research_paused', 'request_expired'):
+                    self.send(409, {'error': code})
+                elif code in DISCUSSION_ERRORS:
+                    self.send(502, {'error': 'invalid_model_response'})
+                else:
+                    self.send(400, {'error': 'invalid_or_unavailable_request'})
+            except (TypeError, KeyError, OverflowError, OSError, sqlite3.Error):
                 self.send(400, {'error': 'invalid_or_unavailable_request'})
 
     return ThreadingHTTPServer(('127.0.0.1', port), Handler)

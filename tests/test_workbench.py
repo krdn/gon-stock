@@ -64,3 +64,13 @@ def test_invalid_input_and_missing_credentials_emit_only_safe_error(server):
     response = client.post('/api/discuss', headers={'origin': origin}, json={'secret': 'no-echo'})
     assert response.status_code == 400 and 'no-echo' not in response.text
     assert client.get('/api/state').json()['runs'] == []
+
+
+def test_pause_is_reported_before_credential_lookup(server):
+    client, origin = server
+    assert (
+        client.post('/api/pause', headers={'origin': origin}, json={'paused': True}).status_code
+        == 200
+    )
+    response = client.post('/api/discuss', headers={'origin': origin}, json={})
+    assert response.status_code == 409 and response.json()['error'] == 'research_paused'

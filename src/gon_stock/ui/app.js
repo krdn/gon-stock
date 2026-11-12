@@ -24,7 +24,9 @@ async function request(path, body) {
   return value;
 }
 function showError(error) {
-  const messages = {discussion_busy: '다른 연구 요청을 처리 중입니다.', model_mismatch: '요청과 반환 모델이 달라 중단했습니다.',
+  const messages = {research_paused: '연구 요청이 일시중단되어 있습니다.', request_expired: '검토 중 자료 유효기한이 지났습니다.',
+    invalid_model_response: '모델 응답 형식이나 출처가 유효하지 않아 중단했습니다.', rate_limited: '모델 사용량 한도로 중단했습니다.',
+    discussion_busy: '다른 연구 요청을 처리 중입니다.', model_mismatch: '요청과 반환 모델이 달라 중단했습니다.',
     settings_unavailable: '프록시 설정을 확인할 수 없습니다.', credentials_missing: '프록시 인증 연결이 필요합니다.',
     timeout: '모델 응답 시간이 초과됐습니다.', provider_unavailable: '모델 제공자가 응답하지 않습니다.',
     invalid_or_unavailable_request: '입력 시각·출처·중복 여부와 연구 중단 상태를 확인해 주세요.'};
