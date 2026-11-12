@@ -1,7 +1,7 @@
 # P4 로컬 구현 검증
 
 2026-11-12. [병행 승인·범위](../../plans/p4-decision-flow.md) · [실행](../../operations/p4-workbench.md).
-로컬 구현과 제한된 실제 연결 검증을 기록한다. 상시 운용·실제 전략 성과 수용은 아니다.
+[수용 결과와 CI](acceptance.md). 로컬 구현과 제한된 실제 연결 검증을 기록한다. 상시 운용·실제 전략 성과 수용은 아니다.
 
 - PASS: 208 tests·Ruff·format·build. 기존 달력 의존성 Pandas 경고 28개.
 - 결정 흐름: 출처·시각 검증, Astra 제안→Fable 반론, 최대 두 번 보완, 모델 불일치/형식 오류 실패,
