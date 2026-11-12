@@ -3,7 +3,7 @@
 2026-11-12. [병행 승인·범위](../../plans/p4-decision-flow.md) · [실행](../../operations/p4-workbench.md).
 P4 전체 수용은 아직 아니다. 전용 Buzz 에이전트와 실제 채널 연결 증거가 남아 있다.
 
-- PASS: 195 tests·Ruff·format·build. 기존 달력 의존성 Pandas 경고 28개.
+- PASS: 198 tests·Ruff·format·build. 기존 달력 의존성 Pandas 경고 28개.
 - 결정 흐름: 출처·시각 검증, Astra 제안→Fable 반론, 최대 두 번 보완, 모델 불일치/형식 오류 실패,
   요청 중복 방지, 처리 중 일시중단 시 다음 모델 호출 차단, 실패 기록 보존 검사.
 - 카드: 연구·관망·주문 불가, 확률/기대손익/매매 가격 null, 자료 기준시각과 유효기한 표시.
@@ -13,9 +13,14 @@ P4 전체 수용은 아직 아니다. 전용 Buzz 에이전트와 실제 채널 
 - 브라우저: 관심 종목 등록·삭제, 연구 일시중단·재개, 실제 카드 표시, reload 후 저장 유지 확인.
   390px 화면에서 가로 넘침 없음. 대비 문제 수정 후 desktop/mobile axe 검사 위반 0건.
 - Buzz 전달기: subprocess 경계 합성 검사로 private 채널/구성원, accepted 후 원격 재조회,
-  부분 전송 실패 기록·재시도 금지, 만료 카드 미전송 확인. 실제 전송은 NOT_RUN.
-- 연결 차단: 현재 셸에 BUZZ_PRIVATE_KEY가 없고 Orca 자동 실행은 runtime_open_timeout.
-  실행 중인 다른 에이전트 키 추출이나 managed JSON 직접 수정은 수행하지 않았다.
+  부분 전송 실패 기록·재시도 금지, 만료 카드 미전송 확인.
+- 실제 Buzz CLI: `buzz-gon`의 Gon 신원과 세 전용 private 채널·구성원 검증 PASS.
+  연결 시험 메시지 4개(요청·스레드 답글·signals·ops)를 전송하고 event ID·작성자·본문·채널·스레드 재조회 PASS.
+  이는 전송 경로 검사이며 전용 에이전트 응답이나 완성 카드 발행 검증이 아니다.
+- 새 실제 프록시 요청: Astra 응답 후 Fable rate_limited로 실패 저장. 카드 생성·발행 없음.
+- 남은 연결 차단: `buzz-gon agents draft-create`는 `BUZZ_AUTH_TAG` 부재로 거부됐다.
+  Herdr 터미널의 일반 CLI 인증은 해결됐지만 전용 에이전트 생성·응답은 NOT_RUN.
+  다른 에이전트 키 추출이나 managed JSON 직접 수정은 수행하지 않았다.
 - 독립 Fable 5.2 high 코드 리뷰: BLOCKED. 로컬 Claude CLI가 HTTP 429
   usage_limit_reached를 반환했고 해제 안내는 2026-11-12 13:10 KST였다.
   모델 응답·판정은 없으며 PASS가 아니다. Draft PR·CI까지만 진행하고 리뷰 전 병합하지 않는다.

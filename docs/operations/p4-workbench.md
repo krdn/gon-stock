@@ -39,25 +39,32 @@ P3 데이터 수집 서비스는 이 버튼과 독립적이다.
 
 ## Buzz 연결 준비
 
-현재 Codex 셸에는 Buzz 인증이 없다. 실행 중인 다른 에이전트의 키를 추출하거나 관리 JSON을 수정하지 않는다.
-사용자가 승인한 Buzz 인증 런타임에서 다음 공식 CLI 경로를 사용한다.
+2026-11-12 사용자가 등록한 `buzz-gon` 인증 경로를 확인했다. Herdr 터미널에서 이 CLI를 사용하며
+Orca 제어는 필요하지 않다. 래퍼가 OS 키 저장소에서 인증을 전달하므로 앱은 비밀값을 읽지 않는다.
+실행 중인 다른 에이전트의 키를 추출하거나 관리 JSON을 수정하지 않는다.
+다음 세 채널은 이미 생성했으므로 먼저 조회하고 재사용한다.
 
 ```sh
-buzz channels create --name gon-stock-research --type stream --visibility private
-buzz channels create --name gon-stock-signals --type stream --visibility private
-buzz channels create --name gon-stock-ops --type stream --visibility private
+buzz-gon channels create --name gon-stock-research --type stream --visibility private
+buzz-gon channels create --name gon-stock-signals --type stream --visibility private
+buzz-gon channels create --name gon-stock-ops --type stream --visibility private
 ```
 
 먼저 같은 이름의 기존 채널을 조회하고 재사용 가능 여부를 확인한다. 생성 응답의 UUID를 비공개 설정에 저장한다.
 전용 에이전트는 `buzz agents draft-create --channel <UUID> --display-name <이름> --system-prompt -`로
-소유자 Desktop의 생성 폼을 연다. 초안 생성은 실제 저장·모델 매핑·실행 증거가 아니다.
+소유자 Desktop의 생성 폼을 요청한다. 이 경로는 에이전트 소유자 인증 태그가 필요하다.
+현재 `buzz-gon`은 Gon 사용자 인증만 전달하며 `BUZZ_AUTH_TAG`를 제거한다. 따라서 실제 시도는
+`agent draft requests require BUZZ_AUTH_TAG`로 거부됐다. 일반 채널 인증 성공과 에이전트 생성 권한은 다르다.
+초안 생성은 실제 저장·모델 매핑·실행 증거가 아니다.
 이름은 `GON-STOCK · 전략`, `GON-STOCK · 반론`으로 기존 에이전트와 구분한다.
 전략은 Astra, 반론은 Fable 5.2를 요청하며 실제 반환 모델을 대조한다.
 리서치 Argon의 ID 불일치는 아직 해결되지 않았다. 다른 모델을 Argon으로 등록하지 않는다.
 
 비공개 `.private/p4/buzz.json`에는 `relay`(HTTPS URL), `sender_pubkey`(전송 주체의 64자리 공개키),
 `allowed_members`(허용된 공개키 배열), `channels`(`research`, `signals`, `ops`의 UUID 매핑)를 둔다.
-키·인증 태그는 파일이나 명령 인수로 넣지 않는다. Buzz가 제공하는 인증된 실행 환경을 그대로 사용한다.
+현재 설정에는 `"cli": "buzz-gon"`을 추가한다. 이 경로의 relay는 `https://buzz.krdn.kr`만 허용한다.
+기존 `buzz` 경로는 `cli` 생략 시 유지되며 인증된 실행 환경이 필요하다.
+키·인증 태그는 파일이나 명령 인수로 넣지 않는다.
 
 ```sh
 uv run gon-stock-buzz preflight

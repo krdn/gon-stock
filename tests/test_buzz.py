@@ -129,3 +129,29 @@ def test_expired_card_sends_no_message(tmp_path, monkeypatch):
                 store, api().BuzzCLI(config()), 'fixture_1', now=lambda: NOW + timedelta(minutes=11)
             )
     assert writes == []
+
+
+def test_owner_keyring_cli_works_without_exported_key(monkeypatch):
+    process(monkeypatch)
+    monkeypatch.delenv('BUZZ_PRIVATE_KEY')
+    runner = subprocess.run
+    commands = []
+
+    def run(args, **kwargs):
+        commands.append(args)
+        assert args[0] == 'buzz-gon' and '--relay' not in args
+        return runner(args, **kwargs)
+
+    monkeypatch.setattr(subprocess, 'run', run)
+    settings = config() | {'cli': 'buzz-gon', 'relay': 'https://buzz.krdn.kr'}
+    api().BuzzCLI(settings).preflight()
+    assert len(commands) == 5
+
+
+@pytest.mark.parametrize(
+    'cli,relay', [('unknown', 'https://buzz.krdn.kr'), ('buzz-gon', 'https://relay.example')]
+)
+def test_cli_configuration_cannot_silently_select_another_relay(monkeypatch, cli, relay):
+    monkeypatch.delenv('BUZZ_PRIVATE_KEY', raising=False)
+    with pytest.raises(ValueError, match='invalid_cli'):
+        api().BuzzCLI(config() | {'cli': cli, 'relay': relay})

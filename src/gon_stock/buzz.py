@@ -28,7 +28,7 @@ def _plain(value):
 
 class BuzzCLI:
     def __init__(self, config):
-        if not isinstance(config, dict) or set(config) != {
+        if not isinstance(config, dict) or set(config) - {'cli'} != {
             'relay',
             'sender_pubkey',
             'allowed_members',
@@ -63,14 +63,20 @@ class BuzzCLI:
             str(UUID(value)) != value for value in channels.values()
         ):
             raise ValueError('invalid_channels')
-        if not os.environ.get('BUZZ_PRIVATE_KEY'):
+        cli = config.get('cli', 'buzz')
+        if cli not in ('buzz', 'buzz-gon') or (
+            cli == 'buzz-gon' and config['relay'] != 'https://buzz.krdn.kr'
+        ):
+            raise ValueError('invalid_cli')
+        self.command = ['buzz-gon'] if cli == 'buzz-gon' else ['buzz', '--relay', config['relay']]
+        if cli == 'buzz' and not os.environ.get('BUZZ_PRIVATE_KEY'):
             raise ValueError('buzz_authenticated_runtime_required')
         self.config = config
 
     def call(self, args, *, content=None):
         try:
             result = subprocess.run(
-                ['buzz', '--relay', self.config['relay'], *args],
+                [*self.command, *args],
                 input=content,
                 text=True,
                 capture_output=True,
