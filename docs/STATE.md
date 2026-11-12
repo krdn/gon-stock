@@ -1,6 +1,6 @@
 # 현재 상태
 
-2026-11-12: P1 읽기 전용 연결·시각 관측·코드 리뷰 PASS. 최종 병합·위임 수용 대기.
+2026-11-12: P1 위임 수용 완료. PR #17 병합 main `0d4e956`, main CI PASS와 관측 소스 해시 동일성 확인.
 
 - KIS 실제 조회: 국내·미국 현재가·호가·잔고 6종 성공. 미국 잔고는 NASDAQ 범위, 잔고 각 1페이지.
 - 인증: KIS와 프록시 키는 OS 인증 저장소에 등록. 기존 계좌 연결 차단은 해결됐다.
@@ -10,7 +10,7 @@
 - 실전 시세: 사용자 추가 승인 후 미국 AAPL/NAS 현재가·호가 GET 성공. 실전 잔고·주문 호출 없음.
 - 국내 분봉: 수정 SHA `25d72a8`의 모의 2회 관측에서 완료 분봉 09:36→09:38 KST 전진·양의 거래량 확인. kr-bar-v1 PASS이며 거래소 실체결·신선도 증명은 아니다.
 - 미국 분봉: 정식 `us_bars`는 명세의 한국·뉴욕 시각 일치를 검사하고 UTC 시각을 출력한다. 미래·불일치 시각은 event_time=null이다. 신선도는 계속 unverified다.
-- 다음 행동: PR #17 최종 CI·병합·main CI와 소스 해시 대조 후 이슈 #5에 위임 수용 기록. 그 후 P2 저장·재생 구현에 진입한다.
+- 다음 행동: [P2 이슈 #6](https://github.com/krdn/gon-stock/issues/6)의 저장·재생·품질 구현. [P1 위임 수용 근거](https://github.com/krdn/gon-stock/issues/5#issuecomment-6810933307).
 - 후속 소유: 호가 일자·시간대와 신선도는 P2 품질/P5 운용, Argon 동등성은 P3 선정에서 검사한다. Argon 불일치 FAIL을 유지한다.
 - 코드 리뷰: 로컬 Fable 5.2 high 요청, canonicalModel·firstParty 반환 확인. 본체·수정분 PASS. 97 tests·프로젝트 Ruff·format·build·docs PASS. [관측과 비차단 지적 처리](evidence/P1/acceptance.md).
 - [업데이트 후 검증과 데이터 경로 선택](evidence/P1/proxy-recheck.md).
