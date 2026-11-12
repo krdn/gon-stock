@@ -1,6 +1,8 @@
 # P2 저장·재생 검증
 
-2026-11-12. 구현·합성 검사·소량 실제 저장은 확인했다. Fable 수정분 리뷰는 PASS다. 최종 CI·병합 전이므로 P2 수용은 보류다.
+2026-11-12. [P2 위임 수용 완료](https://github.com/krdn/gon-stock/issues/6#issuecomment-6811449518).
+PR #19 병합 main `5c161ab66b46d112157cefb6faeb9f064c8e1ae9`, [main CI](https://github.com/krdn/gon-stock/actions/runs/43133041839) PASS.
+검증 SHA `4dd4036`과 main의 소스·설정·lock 객체 해시가 같고 최종 코드의 실제 표본 재생 hash도 같았다.
 선행 [P1 수용](https://github.com/krdn/gon-stock/issues/5#issuecomment-6810933307)을 확인한 뒤 구현했다.
 
 | 조건 | 확인한 결과 | 한계 |
@@ -39,8 +41,8 @@ DuckDB 2.0.0, exchange-calendars 4.13.2, pytz 2026.6을 lock에 고정했다. py
 - [NYSE 일정](https://www.nyse.com/trade/hours-calendars): 2026-11-26 휴장·11-27 13:00 ET 조기 종료 대조.
 - [KIS 국내 분봉 필드](https://github.com/koreainvestment/open-trading-api/blob/main/examples_llm/domestic_stock/inquire_time_itemchartprice/chk_inquire_time_itemchartprice.py), [미국 분봉 필드](https://github.com/koreainvestment/open-trading-api/blob/main/examples_llm/overseas_stock/inquire_time_itemchartprice/chk_inquire_time_itemchartprice.py).
 
-다음 행동: Fable 5.2 독립 리뷰의 지적 처리, 최종 코드의 검증·PR·CI와 수용 여부 기록.
-P3는 P2 수용 전 시작하지 않는다.
+다음 행동: P3 평가 계약을 먼저 고정하고 비용·표본 외 평가·확률 보정을 구현한다.
+현재 실제 표본 31행은 연결·저장 검사용이며 수익성이나 충분한 학습 자료를 의미하지 않는다.
 
 ## Fable 지적 처리
 
