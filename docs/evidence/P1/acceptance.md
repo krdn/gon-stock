@@ -1,6 +1,7 @@
 # P1 수용 조건 재확인
 
-2026-11-12. P1의 코드 리뷰와 국내 모의 분봉 2회 관측은 PASS다. 최종 CI·병합 후 소스 대조와 이슈 #5의 위임 수용 기록이 남았다.
+2026-11-12. P1 위임 수용 완료. [수용 기록과 소스 해시 대조](https://github.com/krdn/gon-stock/issues/5#issuecomment-6810933307)를 남겼다.
+PR #17 병합 main `0d4e956a0132af361ee5003f1481a180c82cd1cd`의 [CI](https://github.com/krdn/gon-stock/actions/runs/43129254281)는 PASS다.
 이 문서는 [승인된 단계 기준](../../plans/github-execution-proposal.md#6-단계별-산출물)을 완화하지 않고, 남은 항목의 소유 단계를 구분한다.
 
 ## P1 조건
