@@ -182,7 +182,7 @@ class KisReadClient:
                         'NMIN': '1',
                         'PINC': '1',
                         'NEXT': '',
-                        'NREC': '1',
+                        'NREC': '2',
                         'FILL': '',
                         'KEYB': '',
                     }
