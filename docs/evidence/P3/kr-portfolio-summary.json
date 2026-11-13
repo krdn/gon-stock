@@ -1,0 +1,828 @@
+{
+  "created_at": "2026-11-13T03:52:35.017507+00:00",
+  "base_sha": "6cb64aebbc39fde975d11e796e124ea04a276075",
+  "source_hashes": {
+    "src/gon_stock/portfolio_history.py": "d7751b0f42bbc3e479742c0204d22f34c6138606275b1908454b3c2b40e79e6c",
+    "src/gon_stock/portfolio.py": "443f4314c1d3f0eed64b05517ea66bbf6ff2a82eafc58a417229d260eb548b30",
+    "src/gon_stock/backtest.py": "26e303e65fc165c92cd31082eaaf240bfe6195b8fb083a6a7489a7d2aac95ee4",
+    "src/gon_stock/event_store.py": "1b0c55a4c8e2e3d3db6511242350ed9cabe7648bd5f9e9fcf6506e3647e83941"
+  },
+  "dirty_sources": true,
+  "loaded_paths": {
+    "src/gon_stock/portfolio_history.py": "src/gon_stock/portfolio_history.py",
+    "src/gon_stock/portfolio.py": "src/gon_stock/portfolio.py",
+    "src/gon_stock/backtest.py": "src/gon_stock/backtest.py",
+    "src/gon_stock/event_store.py": "src/gon_stock/event_store.py"
+  },
+  "evidence_hashes": "PASS",
+  "driver_sha256": "affe682a50f2d261793d31191840926ce0b45a35225e591d6f32f079d81236cd",
+  "plan_sha256": "984c3f95a59bfc49163788942ea77e7398e4bff64d1c5b119a8466c966bd90b4",
+  "normalized_sha256": {
+    "XKRX": "da2ed9899cdfa5477635f9bacffb5c42f92288760302eae0c25df795e9e6ce83",
+    "XNAS": "9b6637b2639443c7368db5b36c472be0b67100586a198233e67ae1d28b4b1cb0"
+  },
+  "status": "EXPLORATORY_ONLY",
+  "P3": "BLOCKED",
+  "P5": "NOT_STARTED",
+  "scenarios": {
+    "KR_ONLY-0": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9912002.500000000000000000000",
+        "max_drawdown": "0.0152647842635334552069651452",
+        "filled_entries": 46,
+        "rejected_entries": 1544,
+        "rejection_reasons": {
+          "position_limit": 102,
+          "budget_or_cash": 1442
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "120252.500",
+          "USD": "3671.368465881972846558826337"
+        },
+        "receivables": {
+          "KRW": "4791750",
+          "USD": "0"
+        },
+        "return": "-0.008799750000000000000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XKRX": {
+          "symbol": "069500",
+          "quantity": 47,
+          "ending_nav": "8996268",
+          "entry_at": "2026-09-14T00:00:00+00:00",
+          "exit_at": "2026-11-12T06:30:00+00:00",
+          "entry_price": "105596",
+          "exit_price": "84240",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.1003732"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "market_structure": {
+        "interruptions_sha256": "2d61e5233af9c067b7ebf28c2addffdd76894b6b0ad6d57bcbea57f2f3363789",
+        "events": 44,
+        "valuation": "last_observation_carry_not_tradable",
+        "time_model": "bar_interval_bounds_with_nominal_auction_resume"
+      },
+      "output_sha256": "1c3c3f50690fa8977f7f6ef3fa2522ef6ff61bbc0fe5fd0ce6d9b27e3d771ea9"
+    },
+    "KR_ONLY-25": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9778594.156250000000000000000",
+        "max_drawdown": "0.0240863669895128767910648906",
+        "filled_entries": 48,
+        "rejected_entries": 1542,
+        "rejection_reasons": {
+          "position_limit": 110,
+          "budget_or_cash": 1432
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "74.78125000",
+          "USD": "3671.368465881972846558826337"
+        },
+        "receivables": {
+          "KRW": "4778519.37500",
+          "USD": "0"
+        },
+        "return": "-0.022140584375000000000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XKRX": {
+          "symbol": "069500",
+          "quantity": 47,
+          "ending_nav": "8985115.13500",
+          "entry_at": "2026-09-14T00:00:00+00:00",
+          "exit_at": "2026-11-12T06:30:00+00:00",
+          "entry_price": "105596",
+          "exit_price": "84240",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.1014884865"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "market_structure": {
+        "interruptions_sha256": "2d61e5233af9c067b7ebf28c2addffdd76894b6b0ad6d57bcbea57f2f3363789",
+        "events": 44,
+        "valuation": "last_observation_carry_not_tradable",
+        "time_model": "bar_interval_bounds_with_nominal_auction_resume"
+      },
+      "output_sha256": "c7006fecc8864fdc11a0f166c6411c0bd45eb7c86c559bf508c1c04c0cffae1f"
+    },
+    "KR_ONLY-50": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9583438.318750000000000000000",
+        "max_drawdown": "0.0419744663123164772838063030",
+        "filled_entries": 38,
+        "rejected_entries": 1552,
+        "rejection_reasons": {
+          "position_limit": 87,
+          "budget_or_cash": 1465
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "80224.5687500",
+          "USD": "3671.368465881972846558826337"
+        },
+        "receivables": {
+          "KRW": "4503213.7500",
+          "USD": "0"
+        },
+        "return": "-0.041656168125000000000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XKRX": {
+          "symbol": "069500",
+          "quantity": 47,
+          "ending_nav": "8973962.2700",
+          "entry_at": "2026-09-14T00:00:00+00:00",
+          "exit_at": "2026-11-12T06:30:00+00:00",
+          "entry_price": "105596",
+          "exit_price": "84240",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.102603773"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "market_structure": {
+        "interruptions_sha256": "2d61e5233af9c067b7ebf28c2addffdd76894b6b0ad6d57bcbea57f2f3363789",
+        "events": 44,
+        "valuation": "last_observation_carry_not_tradable",
+        "time_model": "bar_interval_bounds_with_nominal_auction_resume"
+      },
+      "output_sha256": "c676ceeb09be0f39bd2435c662ff652aff70471c2417f5d2a57a3a14a1ca9a19"
+    },
+    "KR_ONLY-75": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9487005.653125000000000000000",
+        "max_drawdown": "0.051299434687500000000",
+        "filled_entries": 36,
+        "rejected_entries": 1554,
+        "rejection_reasons": {
+          "position_limit": 77,
+          "budget_or_cash": 1311,
+          "loss_stop": 166
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "4487005.65312500",
+          "USD": "3671.368465881972846558826337"
+        },
+        "receivables": {
+          "KRW": "0",
+          "USD": "0"
+        },
+        "return": "-0.051299434687500000000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XKRX": {
+          "symbol": "069500",
+          "quantity": 47,
+          "ending_nav": "8962809.40500",
+          "entry_at": "2026-09-14T00:00:00+00:00",
+          "exit_at": "2026-11-12T06:30:00+00:00",
+          "entry_price": "105596",
+          "exit_price": "84240",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.1037190595"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "market_structure": {
+        "interruptions_sha256": "2d61e5233af9c067b7ebf28c2addffdd76894b6b0ad6d57bcbea57f2f3363789",
+        "events": 44,
+        "valuation": "last_observation_carry_not_tradable",
+        "time_model": "bar_interval_bounds_with_nominal_auction_resume"
+      },
+      "output_sha256": "61498491511c6efcd4fb768662bddb72a35d881a69acaa36dfd87ceb268645de"
+    },
+    "COMBINED-0": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9860455.780634000000000000000",
+        "max_drawdown": "0.0189277442789536278619328054",
+        "filled_entries": 79,
+        "rejected_entries": 2562,
+        "rejection_reasons": {
+          "position_limit": 154,
+          "budget_or_cash": 2408
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "120252.500",
+          "USD": "56.695865881972846558826337"
+        },
+        "receivables": {
+          "KRW": "4791750",
+          "USD": "3576.8232"
+        },
+        "return": "-0.013954421936600000000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XKRX": {
+          "symbol": "069500",
+          "quantity": 47,
+          "ending_nav": "8996268",
+          "entry_at": "2026-09-14T00:00:00+00:00",
+          "exit_at": "2026-11-12T06:30:00+00:00",
+          "entry_price": "105596",
+          "exit_price": "84240",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.1003732"
+        },
+        "XNAS": {
+          "symbol": "SPY",
+          "quantity": 4,
+          "ending_nav": "9977665.0040",
+          "entry_at": "2026-09-18T13:30:00+00:00",
+          "exit_at": "2026-11-12T21:00:00+00:00",
+          "entry_price": "761.31",
+          "exit_price": "757.21",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.0022334996"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "market_structure": {
+        "interruptions_sha256": "2d61e5233af9c067b7ebf28c2addffdd76894b6b0ad6d57bcbea57f2f3363789",
+        "events": 44,
+        "valuation": "last_observation_carry_not_tradable",
+        "time_model": "bar_interval_bounds_with_nominal_auction_resume"
+      },
+      "output_sha256": "fecf82c49ca49a4cd916a4d3948530d08619dcd3ebc6e5812f38ad1817554c97"
+    },
+    "COMBINED-25": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9560877.431395748750000000000",
+        "max_drawdown": "0.0452415596339627555378658357",
+        "filled_entries": 81,
+        "rejected_entries": 2560,
+        "rejection_reasons": {
+          "position_limit": 162,
+          "budget_or_cash": 2398
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "74.78125000",
+          "USD": "41.086254756972846558826337"
+        },
+        "receivables": {
+          "KRW": "4778519.37500",
+          "USD": "3470.418547500"
+        },
+        "return": "-0.043912256860425125000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XKRX": {
+          "symbol": "069500",
+          "quantity": 47,
+          "ending_nav": "8985115.13500",
+          "entry_at": "2026-09-14T00:00:00+00:00",
+          "exit_at": "2026-11-12T06:30:00+00:00",
+          "entry_price": "105596",
+          "exit_price": "84240",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.1014884865"
+        },
+        "XNAS": {
+          "symbol": "SPY",
+          "quantity": 4,
+          "ending_nav": "9967324.717986000",
+          "entry_at": "2026-09-18T13:30:00+00:00",
+          "exit_at": "2026-11-12T21:00:00+00:00",
+          "entry_price": "761.31",
+          "exit_price": "757.21",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.0032675282014"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "market_structure": {
+        "interruptions_sha256": "2d61e5233af9c067b7ebf28c2addffdd76894b6b0ad6d57bcbea57f2f3363789",
+        "events": 44,
+        "valuation": "last_observation_carry_not_tradable",
+        "time_model": "bar_interval_bounds_with_nominal_auction_resume"
+      },
+      "output_sha256": "822adf569e4ce81d092a1f66f0a208dccf74a8a5c626a2e9ec2ab298ae293b25"
+    },
+    "COMBINED-50": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9493579.897908905000000000000",
+        "max_drawdown": "0.0506861533029809113876204756",
+        "filled_entries": 52,
+        "rejected_entries": 2589,
+        "rejection_reasons": {
+          "position_limit": 113,
+          "budget_or_cash": 1827,
+          "loss_stop": 649
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "4732625.1437500",
+          "USD": "3495.843830381972846558826337"
+        },
+        "receivables": {
+          "KRW": "0",
+          "USD": "0"
+        },
+        "return": "-0.050642010209109500000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XKRX": {
+          "symbol": "069500",
+          "quantity": 47,
+          "ending_nav": "8973962.2700",
+          "entry_at": "2026-09-14T00:00:00+00:00",
+          "exit_at": "2026-11-12T06:30:00+00:00",
+          "entry_price": "105596",
+          "exit_price": "84240",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.102603773"
+        },
+        "XNAS": {
+          "symbol": "SPY",
+          "quantity": 4,
+          "ending_nav": "9956984.43197200",
+          "entry_at": "2026-09-18T13:30:00+00:00",
+          "exit_at": "2026-11-12T21:00:00+00:00",
+          "entry_price": "761.31",
+          "exit_price": "757.21",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.0043015568028"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "market_structure": {
+        "interruptions_sha256": "2d61e5233af9c067b7ebf28c2addffdd76894b6b0ad6d57bcbea57f2f3363789",
+        "events": 44,
+        "valuation": "last_observation_carry_not_tradable",
+        "time_model": "bar_interval_bounds_with_nominal_auction_resume"
+      },
+      "output_sha256": "59490115bdd5881a3c46ad5d14f4f356a0538fc271c2ad2dd74e977ee7ceefd0"
+    },
+    "COMBINED-75": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9486084.193359955000000000000",
+        "max_drawdown": "0.051391580664004500000",
+        "filled_entries": 33,
+        "rejected_entries": 2608,
+        "rejection_reasons": {
+          "position_limit": 64,
+          "budget_or_cash": 1031,
+          "loss_stop": 1513
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "4730686.7062500",
+          "USD": "3491.763275381972846558826337"
+        },
+        "receivables": {
+          "KRW": "0",
+          "USD": "0"
+        },
+        "return": "-0.051391580664004500000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XKRX": {
+          "symbol": "069500",
+          "quantity": 47,
+          "ending_nav": "8962809.40500",
+          "entry_at": "2026-09-14T00:00:00+00:00",
+          "exit_at": "2026-11-12T06:30:00+00:00",
+          "entry_price": "105596",
+          "exit_price": "84240",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.1037190595"
+        },
+        "XNAS": {
+          "symbol": "SPY",
+          "quantity": 4,
+          "ending_nav": "9946644.145958000",
+          "entry_at": "2026-09-18T13:30:00+00:00",
+          "exit_at": "2026-11-12T21:00:00+00:00",
+          "entry_price": "761.31",
+          "exit_price": "757.21",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.0053355854042"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "market_structure": {
+        "interruptions_sha256": "2d61e5233af9c067b7ebf28c2addffdd76894b6b0ad6d57bcbea57f2f3363789",
+        "events": 44,
+        "valuation": "last_observation_carry_not_tradable",
+        "time_model": "bar_interval_bounds_with_nominal_auction_resume"
+      },
+      "output_sha256": "5264b4aca36867815bbf460fad94f99290a045d5d5e512951df4d9b748dec638"
+    }
+  },
+  "US_regression": {
+    "0": "PASS exact summary/reference equality",
+    "25": "PASS exact summary/reference equality",
+    "50": "PASS exact summary/reference equality",
+    "75": "PASS exact summary/reference equality"
+  },
+  "crosscheck": {
+    "KR_ONLY-0": {
+      "status": "PASS",
+      "output_sha256": "1c3c3f50690fa8977f7f6ef3fa2522ef6ff61bbc0fe5fd0ce6d9b27e3d771ea9",
+      "entries_by_symbol": {
+        "005380": 37,
+        "000660": 9
+      },
+      "realized_pnl_krw": "-87997.500",
+      "pnl_by_symbol_krw": {
+        "005380": "-18477.500",
+        "000660": "-69520.00"
+      },
+      "exit_reasons": {
+        "time": 34,
+        "stop": 11,
+        "target": 1
+      },
+      "pnl_by_exit_reason_krw": {
+        "time": "51750",
+        "stop": "-172665.00",
+        "target": "32917.500"
+      },
+      "extended_holds": [],
+      "fills_time_price_checked": 46
+    },
+    "KR_ONLY-25": {
+      "status": "PASS",
+      "output_sha256": "c7006fecc8864fdc11a0f166c6411c0bd45eb7c86c559bf508c1c04c0cffae1f",
+      "entries_by_symbol": {
+        "005380": 39,
+        "000660": 9
+      },
+      "realized_pnl_krw": "-221405.84375000",
+      "pnl_by_symbol_krw": {
+        "005380": "-127890.78125000",
+        "000660": "-93515.0625000"
+      },
+      "exit_reasons": {
+        "time": 33,
+        "closing_auction": 1,
+        "stop": 10,
+        "target": 4
+      },
+      "pnl_by_exit_reason_krw": {
+        "time": "-61223.75000",
+        "closing_auction": "-1340.62500",
+        "stop": "-197183.8687500",
+        "target": "38342.40000000"
+      },
+      "extended_holds": [],
+      "fills_time_price_checked": 48
+    },
+    "KR_ONLY-50": {
+      "status": "PASS",
+      "output_sha256": "c676ceeb09be0f39bd2435c662ff652aff70471c2417f5d2a57a3a14a1ca9a19",
+      "entries_by_symbol": {
+        "005380": 29,
+        "000660": 9
+      },
+      "realized_pnl_krw": "-416561.6812500",
+      "pnl_by_symbol_krw": {
+        "005380": "-270155.4812500",
+        "000660": "-146406.200000"
+      },
+      "exit_reasons": {
+        "time": 28,
+        "stop": 9,
+        "target": 1
+      },
+      "pnl_by_exit_reason_krw": {
+        "time": "-184231.2500",
+        "stop": "-254193.137500",
+        "target": "21862.7062500"
+      },
+      "extended_holds": [],
+      "fills_time_price_checked": 38
+    },
+    "KR_ONLY-75": {
+      "status": "PASS",
+      "output_sha256": "61498491511c6efcd4fb768662bddb72a35d881a69acaa36dfd87ceb268645de",
+      "entries_by_symbol": {
+        "005380": 28,
+        "000660": 8
+      },
+      "realized_pnl_krw": "-512994.34687500",
+      "pnl_by_symbol_krw": {
+        "005380": "-346009.15937500",
+        "000660": "-166985.1875000"
+      },
+      "exit_reasons": {
+        "time": 26,
+        "stop": 9,
+        "target": 1
+      },
+      "pnl_by_exit_reason_krw": {
+        "time": "-253116.56250",
+        "stop": "-276213.0937500",
+        "target": "16335.30937500"
+      },
+      "extended_holds": [],
+      "fills_time_price_checked": 36
+    },
+    "COMBINED-0": {
+      "status": "PASS",
+      "output_sha256": "fecf82c49ca49a4cd916a4d3948530d08619dcd3ebc6e5812f38ad1817554c97",
+      "entries_by_symbol": {
+        "005380": 37,
+        "000660": 9,
+        "NVDA": 14,
+        "AMZN": 19
+      },
+      "realized_pnl_krw": "-139544.219366",
+      "pnl_by_symbol_krw": {
+        "005380": "-18477.500",
+        "000660": "-69520.00",
+        "NVDA": "-108198.755775",
+        "AMZN": "56652.036409"
+      },
+      "exit_reasons": {
+        "time": 64,
+        "stop": 13,
+        "target": 2
+      },
+      "pnl_by_exit_reason_krw": {
+        "time": "12573.055126",
+        "stop": "-221670.977382",
+        "target": "69553.702890"
+      },
+      "extended_holds": [],
+      "fills_time_price_checked": 79
+    },
+    "COMBINED-25": {
+      "status": "PASS",
+      "output_sha256": "822adf569e4ce81d092a1f66f0a208dccf74a8a5c626a2e9ec2ab298ae293b25",
+      "entries_by_symbol": {
+        "005380": 39,
+        "000660": 9,
+        "NVDA": 14,
+        "AMZN": 19
+      },
+      "realized_pnl_krw": "-439122.56860425125",
+      "pnl_by_symbol_krw": {
+        "005380": "-127890.78125000",
+        "000660": "-93515.0625000",
+        "NVDA": "-175887.39433972125",
+        "AMZN": "-41829.33051453000"
+      },
+      "exit_reasons": {
+        "time": 63,
+        "closing_auction": 1,
+        "stop": 12,
+        "target": 5
+      },
+      "pnl_by_exit_reason_krw": {
+        "time": "-248228.63441986625",
+        "closing_auction": "-1340.62500",
+        "stop": "-258380.08300577250",
+        "target": "68826.77382138750"
+      },
+      "extended_holds": [],
+      "fills_time_price_checked": 81
+    },
+    "COMBINED-50": {
+      "status": "PASS",
+      "output_sha256": "59490115bdd5881a3c46ad5d14f4f356a0538fc271c2ad2dd74e977ee7ceefd0",
+      "entries_by_symbol": {
+        "005380": 24,
+        "000660": 6,
+        "NVDA": 9,
+        "AMZN": 13
+      },
+      "realized_pnl_krw": "-506420.1020910950",
+      "pnl_by_symbol_krw": {
+        "005380": "-184712.9562500",
+        "000660": "-82661.900000",
+        "NVDA": "-141143.4666162050",
+        "AMZN": "-97901.7792248900"
+      },
+      "exit_reasons": {
+        "time": 44,
+        "stop": 6,
+        "target": 2
+      },
+      "pnl_by_exit_reason_krw": {
+        "time": "-401030.9155938700",
+        "stop": "-151584.437500",
+        "target": "46195.2510027750"
+      },
+      "extended_holds": [],
+      "fills_time_price_checked": 52
+    },
+    "COMBINED-75": {
+      "status": "PASS",
+      "output_sha256": "5264b4aca36867815bbf460fad94f99290a045d5d5e512951df4d9b748dec638",
+      "entries_by_symbol": {
+        "005380": 17,
+        "000660": 4,
+        "NVDA": 4,
+        "AMZN": 8
+      },
+      "realized_pnl_krw": "-513915.80664004500",
+      "pnl_by_symbol_krw": {
+        "005380": "-183719.6812500",
+        "000660": "-85593.6125000",
+        "NVDA": "-103557.41916350125",
+        "AMZN": "-141045.09372654375"
+      },
+      "exit_reasons": {
+        "time": 30,
+        "stop": 3
+      },
+      "pnl_by_exit_reason_krw": {
+        "time": "-440651.88789004500",
+        "stop": "-73263.9187500"
+      },
+      "extended_holds": [],
+      "fills_time_price_checked": 33
+    }
+  },
+  "quality": {
+    "normalized_sha256": "da2ed9899cdfa5477635f9bacffb5c42f92288760302eae0c25df795e9e6ce83",
+    "regular_bars": 45423,
+    "closing_auction_rows": 120,
+    "closing_conflicts": 0,
+    "market_events": 44,
+    "vi_request_files": 120,
+    "expected_bars": 45543,
+    "actual_bars": 45543,
+    "coverage": "PASS under cited market structure"
+  },
+  "limitations": [
+    "current_universe_holdout_reuse",
+    "fixed_FX",
+    "unverified_cost_settlement",
+    "assumed_bar_label_80s_receipt",
+    "nominal_auction_times_not_tick_fills",
+    "unverified_corrections_PIT",
+    "P3_BLOCKED_P5_NOT_STARTED"
+  ],
+  "reproduction": "All eight summaries/reference results equal initial run; first run preserved. Compressed bytes include gzip mtime.",
+  "crosscheck_sha256": "04cb06072e5522f4c4140fe0176c6dd5857f2019e641c5fea7b469ccf9b6155d",
+  "pause_entry_observations": {
+    "KR_ONLY-0": 0,
+    "KR_ONLY-25": 0,
+    "KR_ONLY-50": 0,
+    "KR_ONLY-75": 0,
+    "COMBINED-0": 0,
+    "COMBINED-25": 0,
+    "COMBINED-50": 0,
+    "COMBINED-75": 0
+  },
+  "reproduction_check": {
+    "status": "PASS",
+    "scenarios": [
+      "KR_ONLY-0",
+      "KR_ONLY-25",
+      "KR_ONLY-50",
+      "KR_ONLY-75",
+      "COMBINED-0",
+      "COMBINED-25",
+      "COMBINED-50",
+      "COMBINED-75"
+    ],
+    "fields": [
+      "summary",
+      "references"
+    ],
+    "first_summary_sha256": "97da266b6d3653c690331f981ab2141bd953187e8a34d6e343c431df6cedeb89",
+    "v2_summary_sha256": "6fca6cc6f9b52c1c8355e729394bc66249c5bab050532d0f14b7ddf6556d7e5a"
+  },
+  "pause_entry_observations_method": "Count ledger rows where action=buy and quantity>0 and carried_marks is nonempty; all8 outputs checked.",
+  "evidence_checks": {
+    "driver_event_source_hash_count": 44,
+    "CB_driver_hash_scope": "resumption announcements; CB start announcements separately matched below",
+    "CB_start_postrun_verification": {
+      "2026-10-15": {
+        "start_kst": "12:38:12",
+        "sha256": "0d86b8854632dc83e07daabd31c539aa18ae1dc32835eea615d206efaf5a8d52",
+        "content_match": "PASS"
+      },
+      "2026-11-06": {
+        "start_kst": "09:03:33",
+        "sha256": "425bc69883af2ecd0c46b6760055a0732a063ee9f69ef862415aeaaebd71f864",
+        "content_match": "PASS"
+      }
+    }
+  },
+  "validation": {
+    "tests_passed": 299,
+    "review_requested": "claude-fable-5-2 high",
+    "review_returned": "claude-fable-5-2",
+    "provider": "firstParty",
+    "initial": "PASS",
+    "delta": "PASS",
+    "P3": "BLOCKED",
+    "P5": "NOT_STARTED"
+  }
+}
