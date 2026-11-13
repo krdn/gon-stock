@@ -106,7 +106,7 @@ def backtest(rows, calendar, universe, benchmark, costs, *, historical_delay_sec
         if value['kind'] != 'bar':
             continue
         if historical_delay_seconds is not None:
-            if value['endpoint'] not in ('kr_history', 'us_history'):
+            if value['endpoint'] not in ('kr_history', 'us_history', 'alpaca_history'):
                 raise ValueError('history_only')
             if value['event_time'] is not None:
                 value['received_at'] = (

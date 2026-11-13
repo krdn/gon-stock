@@ -6,12 +6,13 @@ import subprocess
 import sys
 import time
 from datetime import UTC, datetime, timedelta
+from decimal import Decimal
 from pathlib import Path
 
 import httpx
 
 from gon_stock.data_cli import private_path
-from gon_stock.event_store import canonical, digest, utc
+from gon_stock.event_store import canonical, digest, instrument, utc, validate_event
 
 
 def validate_keys(keys):
@@ -139,6 +140,76 @@ def download(keys, symbols, start, end, directory, *, transport=None):
             tokens.add(token)
             params['page_token'] = token
     raise ValueError('page_limit')
+
+
+def history_events(page, target):
+    target = instrument(target)
+    params = page['params']
+    if (
+        target['currency'] != 'USD'
+        or page['source'] != 'alpaca_sip'
+        or target['symbol'] not in params['symbols'].split(',')
+        or any(
+            params.get(k) != v
+            for k, v in {
+                'feed': 'sip',
+                'timeframe': '1Min',
+                'adjustment': 'raw',
+                'asof': '-',
+            }.items()
+        )
+    ):
+        raise ValueError('invalid_alpaca_provenance')
+    payload = page['payload']
+    if digest(canonical(payload)) != page['payload_sha256']:
+        raise ValueError('page_hash_mismatch')
+    received = utc(page['received_at'])
+    records = []
+    for index, row in enumerate(payload['bars'].get(target['symbol'], [])):
+        stamp = utc(row['t'])
+        if (
+            stamp.second
+            or stamp.microsecond
+            or not utc(params['start']) <= stamp <= utc(params['end'])
+        ):
+            raise ValueError('invalid_bar_window')
+        raw_hash = digest(canonical(row))
+        record = {
+            'id': digest(canonical([target, received.isoformat(), raw_hash, index])),
+            'schema_version': 1,
+            'instrument': target,
+            'kind': 'bar',
+            'source': 'alpaca_sip',
+            'endpoint': 'alpaca_history',
+            'tr_id': 'STOCK_BARS',
+            'environment': 'real',
+            'received_at': received.isoformat(),
+            'event_time': stamp.isoformat(),
+            'clock_status': 'verified'
+            if stamp + timedelta(minutes=1) <= received
+            else 'unverified',
+            'raw_sha256': raw_hash,
+            'source_clock': {
+                'status': 'timestamped_bar',
+                'source_date': stamp.strftime('%Y-%m-%d'),
+                'source_time': stamp.strftime('%H:%M:%S'),
+                'source_timezone': 'UTC',
+            },
+            'data': {
+                key: format(Decimal(str(row[field])), 'f')
+                for key, field in {
+                    'open': 'o',
+                    'high': 'h',
+                    'low': 'l',
+                    'close': 'c',
+                    'volume': 'v',
+                }.items()
+            },
+            'correction_of': None,
+            'effective_at': None,
+        }
+        records.append(validate_event(record))
+    return records
 
 
 def main():

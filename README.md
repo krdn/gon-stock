@@ -11,7 +11,7 @@
 - [공식 자료 조사](docs/research/evidence.md)
 - [GitHub 운영](.github/project-management.md)
 - [현재 상태](docs/STATE.md)
-- [과거 분봉 분석 결과와 한계](docs/evidence/P3/historical-analysis.md)
+- [과거 분봉 분석 결과와 한계](docs/evidence/P3/historical-analysis.md) · [미국 Alpaca 120일 분석](docs/evidence/P3/alpaca-analysis.md)
 - [P3 평가 계약](docs/plans/p3-evaluation.md) · [연구·미래 수집 실행](docs/operations/p3-research.md)
 - [P4 연구 작업대·Buzz 연결](docs/operations/p4-workbench.md)
 
