@@ -1,6 +1,6 @@
 # 현재 상태
 
-2026-11-13: P1·P2 위임 수용 완료. P3 구현 PR #21 병합 main `c017d8e`, main CI PASS. P3 실제 성과 수용은 자료 부족으로 보류.
+2026-11-13: P1·P2 위임 수용 완료. P3 구현 PR #21 병합 main `c017d8e`, main CI PASS. P3 실제 성과 수용은 품질·비용·보정 검증 미완료로 보류.
 
 - KIS 실제 조회: 국내·미국 현재가·호가·잔고 6종 성공. 미국 잔고는 NASDAQ 범위, 잔고 각 1페이지.
 - 인증: KIS와 프록시 키는 OS 인증 저장소에 등록. 기존 계좌 연결 차단은 해결됐다.
@@ -12,8 +12,8 @@
 - 미국 분봉: 정식 `us_bars`는 명세의 한국·뉴욕 시각 일치를 검사하고 UTC 시각을 출력한다. 미래·불일치 시각은 event_time=null이다. 신선도는 계속 unverified다.
 - P2: 관심 종목·DuckDB/Parquet 저장·시점 재생·품질 구현. 150 tests·Fable 수정분 리뷰·PR/main CI PASS. [위임 수용](https://github.com/krdn/gon-stock/issues/6#issuecomment-6811449518), [검증과 한계](evidence/P2/validation.md).
 - P3 구현: [계약](plans/p3-evaluation.md)에 따라 장중 기준 전략·비용·시간순 분리·확률 보정·비공개 평가 CLI·미래 수집기를 구현했다. [실행 절차](operations/p3-research.md). 175 tests·Ruff·format·build PASS, Fable 수정분 리뷰 PASS. [검증 기록](evidence/P3/implementation.md). PR #21 병합 후 main CI PASS, 리뷰 소스 동일성 확인.
-- P3 과거 분석: [추가 승인과 고정 계약](plans/p3-history.md)에 따라 종목별 120개 날짜를 조회했다. 국내 실제 118일, 최초 시가 충돌 1건을 원본 보존·재조회 v2로 분리했다. [조건부 분석](evidence/P3/historical-analysis.md)의 평가 40일/243완료거래에서 평균은 비용 전 −0.066%, 25bps 비용 후 −0.316%. 미청산22·진입봉부재3 제외, 실제 비용·시점·정정 이력 미검증으로 BLOCKED. 미국은 8일 정규화·16일 시각불일치·96일 빈 응답으로 성과 NOT_RUN. P3 수용/P5 보류, 미래 수집 유지.
-- 자료 보강 조사: 국내 118일 일봉 대조 불일치와 누락 후보 21요청 재조회/복구0 확인. 원인 미확정. Alpaca SIP 원본 수집기 추가, 인증키 미등록으로 실제 미국 확보·성과 NOT_RUN. [조사 근거](evidence/P3/historical-analysis.md), [안전한 등록/실행](operations/p3-research.md#alpaca-과거-원본-확보). P3 수용/P5 보류 유지.
+- P3 과거 분석: [추가 승인과 고정 계약](plans/p3-history.md)에 따라 종목별 120개 날짜를 조회했다. 국내 실제 118일, 최초 시가 충돌 1건을 원본 보존·재조회 v2로 분리했다. [조건부 분석](evidence/P3/historical-analysis.md)의 평가 40일/243완료거래에서 평균은 비용 전 −0.066%, 25bps 비용 후 −0.316%. 미청산22·진입봉부재3 제외, 실제 비용·시점·정정 이력 미검증으로 BLOCKED. 미국 KIS는 8일 정규화·16일 시각불일치·96일 빈 응답으로 평가 불가였으나, 이후 [Alpaca SIP 120일 분석](evidence/P3/alpaca-analysis.md)을 완료했다. AAPL 평가40일/198거래 평균 비용전 +0.0114%, 25bps −0.2386%, 50bps −0.4886%; 미청산/진입봉누락0. 비용전 구간도0을 포함하고 보정표본이 부족하여 채택 근거 없음. P3 수용/P5 보류, 미래 수집 유지.
+- 자료 보강 조사: 국내 118일 일봉 대조 불일치와 누락 후보 21요청 재조회/복구0 확인. 원인 미확정. Alpaca 인증 및 SIP 실제 수집 완료: 두 종목 각120일/46,800정규장봉, 계획 달력 기준 누락·중복·충돌0. 정규화/평가 연결과 236tests·Fable5.2 high PASS. 과거 정정/시점 가용성·비용 미검증. [조사 근거](evidence/P3/historical-analysis.md), [안전한 등록/실행](operations/p3-research.md#alpaca-과거-원본-확보). P3 수용/P5 보류 유지.
 - 미래 수집: 고정 SHA `c017d8e` 사용자 서비스 2개 활성. 국내 두 종목에서 10:57/10:58 KST 연속 저장, 중단 후 DB 재열기 보존과 재시작 수집 확인. 미국도 [첫 정규장 수집](evidence/P3/us-first-capture.md)에서 AAPL/QQQ 23:30→23:33 KST 완료 분봉·양의 거래량·DB 재열기 보존을 확인했다. 종료 한도 2026-11-19 09:00 KST, 오류 시 중단, 수집 중 호스트 절전 방지.
 - P3 첫날 품질: [점검 기록](evidence/P3/first-day-quality.md). 국내 1,100행 스냅샷, 종목별 완료 시각 조건 통과 고유 분봉 263개(10:56~15:18 KST). 라벨 미확인으로 누락 판정 보류. Nasdaq 2026 정규 일정 251세션 대조 일치. 미국 첫 조회는 11/12 23:31에 실제 저장됐으며 초기 16행 스냅샷을 고정했다. 장외 export 후 국내 수집 재기동·양 시장 active 확인.
 - P4 병행: [2026-11-12 추가 승인](https://github.com/krdn/gon-stock/issues/4#issuecomment-6812438087)으로 P3 검증과 [P4 개발](plans/p4-decision-flow.md)을 병행한다. P4 기술 검증은 P3 성과 수용이 아니다.

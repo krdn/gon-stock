@@ -120,3 +120,101 @@ def test_malformed_response_is_not_marked_complete(tmp_path, payload):
             transport=httpx.MockTransport(lambda _: httpx.Response(200, json=payload)),
         )
     assert not (tmp_path / 'pages/manifest.json').exists()
+
+
+def normalized_page(rows=None):
+    payload = {'bars': {'AAPL': rows if rows is not None else [bar()]}, 'next_page_token': None}
+    return {
+        'source': 'alpaca_sip',
+        'params': {
+            'symbols': 'AAPL,QQQ',
+            'timeframe': '1Min',
+            'feed': 'sip',
+            'adjustment': 'raw',
+            'asof': '-',
+            'start': '2026-05-22T13:30:00Z',
+            'end': '2026-11-11T20:59:59Z',
+        },
+        'received_at': '2026-11-13T00:00:00Z',
+        'payload': payload,
+        'payload_sha256': api().digest(api().canonical(payload)),
+    }
+
+
+def normalize(page, target=None):
+    assert hasattr(api(), 'history_events'), 'Alpaca normalization is missing'
+    return api().history_events(
+        page, target or {'exchange': 'XNAS', 'symbol': 'AAPL', 'currency': 'USD'}
+    )
+
+
+def test_normalization_keeps_alpaca_provenance_and_actual_receipts():
+    page = normalized_page()
+    event = normalize(page)[0]
+    assert event['source'] == 'alpaca_sip'
+    assert event['endpoint'] == 'alpaca_history'
+    assert event['received_at'] == '2026-11-13T00:00:00+00:00'
+    assert event['event_time'] == '2026-10-30T13:30:00+00:00'
+    assert event['data']['open'] == '189.31'
+    assert event['raw_sha256'] == api().digest(api().canonical(bar()))
+    assert event['clock_status'] == 'verified'
+    assert normalize(page, {'exchange': 'XNAS', 'symbol': 'QQQ', 'currency': 'USD'}) == []
+
+
+@pytest.mark.parametrize('change', ['hash', 'feed', 'ohlc', 'time', 'volume', 'target'])
+def test_normalization_rejects_invalid_external_data(change):
+    page = normalized_page()
+    target = {'exchange': 'XNAS', 'symbol': 'AAPL', 'currency': 'USD'}
+    if change == 'hash':
+        page['payload_sha256'] = '0' * 64
+    elif change == 'feed':
+        page['params']['feed'] = 'iex'
+    elif change == 'target':
+        target = {'exchange': 'XKRX', 'symbol': '005930', 'currency': 'KRW'}
+    else:
+        page['payload']['bars']['AAPL'][0][{'ohlc': 'h', 'time': 't', 'volume': 'v'}[change]] = {
+            'ohlc': 1,
+            'time': '2026-10-30T13:30:01Z',
+            'volume': 1.5,
+        }[change]
+        page['payload_sha256'] = api().digest(api().canonical(page['payload']))
+    with pytest.raises(ValueError):
+        normalize(page, target)
+
+
+def test_alpaca_history_simulation_preserves_receipt_and_stays_blocked():
+    from copy import deepcopy
+
+    from test_backtest import ASSET, BENCHMARK, COSTS, fixture_rows
+
+    from gon_stock.backtest import backtest
+    from gon_stock.evaluation import VERIFICATIONS, evaluate
+    from gon_stock.event_store import validate_event
+
+    rows, calendar = fixture_rows()
+    for row in rows:
+        row['source'] = 'alpaca_sip'
+        row['environment'] = 'real'
+        row['endpoint'] = 'alpaca_history'
+        row['received_at'] = '2026-11-13T00:00:00+00:00'
+    before = deepcopy(rows)
+    result = backtest(rows, calendar, [ASSET], BENCHMARK, COSTS, historical_delay_seconds=80)
+    assert rows == before
+    assert len(result['trades']) == 1
+    assert result['trades'][0]['entry_at'] == '2026-11-12T14:52:00+00:00'
+    manifest = {
+        'source_kind': 'vendor_history',
+        'environment': 'real',
+        'train_end': '2026-09-01',
+        'calibration_end': '2026-10-01',
+        'test_end': '2026-11-12',
+        'verified': dict.fromkeys(VERIFICATIONS, True),
+    }
+    assessment = evaluate(result, ['2026-11-10', '2026-11-11', '2026-11-12'], manifest)
+    assert assessment['status'] == 'BLOCKED'
+    assert 'assumed_historical_availability' in assessment['blockers']
+    assert assessment['probabilities'] == {}
+    invalid = {k: v for k, v in rows[0].items() if k != 'receipt_seq'}
+    invalid['source'] = 'kis'
+    with pytest.raises(ValueError):
+        validate_event(invalid)

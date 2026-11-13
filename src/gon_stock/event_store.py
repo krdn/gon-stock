@@ -45,7 +45,7 @@ DATA_FIELDS = {
     'split': {'ratio'},
 }
 ENDPOINTS = {
-    'bar': {'kr_bars', 'us_bars', 'kr_history', 'us_history'},
+    'bar': {'kr_bars', 'us_bars', 'kr_history', 'us_history', 'alpaca_history'},
     'quote': {'kr_orderbook', 'us_orderbook'},
     'split': {'corporate_action'},
 }
@@ -103,7 +103,7 @@ def validate_event(value: dict) -> dict:
         raise ValueError('invalid_kind')
     if type(result['schema_version']) is not int or result['schema_version'] != 1:
         raise ValueError('unsupported_schema')
-    if result['source'] not in ('kis', 'synthetic'):
+    if result['source'] not in ('kis', 'synthetic', 'alpaca_sip'):
         raise ValueError('invalid_source')
     if result['environment'] not in ('mock', 'real', 'synthetic'):
         raise ValueError('invalid_environment')
@@ -111,6 +111,8 @@ def validate_event(value: dict) -> dict:
         raise ValueError('invalid_source_environment')
     if result['endpoint'] not in ENDPOINTS[kind]:
         raise ValueError('invalid_endpoint')
+    if (result['source'] == 'alpaca_sip') != (result['endpoint'] == 'alpaca_history'):
+        raise ValueError('invalid_source_endpoint')
     _identifier(result['tr_id'])
     raw_hash = result['raw_sha256']
     if not isinstance(raw_hash, str) or not re.fullmatch(r'[0-9a-f]{64}', raw_hash):
