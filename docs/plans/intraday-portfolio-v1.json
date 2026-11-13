@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "portfolio_id": "intraday-portfolio-v1",
+  "created_at": "2026-11-13T01:33:13.287904+00:00",
+  "status": "RESEARCH_COMPOSITION_ONLY",
+  "execution_enabled": false,
+  "asof": "2026-11-12",
+  "selection_plan_sha256": "33d5dbd894d895dbe3bc49e9da0969a914e0f69f460c0790c74258d190be605e",
+  "capital_krw": "10000000",
+  "capital_status": "user_confirmed_virtual_only",
+  "base_currency": "KRW",
+  "initial_cash_fractions": {
+    "KRW": "0.50",
+    "USD_equivalent": "0.50"
+  },
+  "limits": {
+    "max_positions": 2,
+    "target_slot_fraction_including_buy_cost": "0.25",
+    "target_total_fraction_including_buy_cost": "0.50",
+    "existing_max_instrument_fraction": "0.30",
+    "existing_max_gross_fraction": "0.60",
+    "max_trade_planned_loss_fraction": "0.005",
+    "max_total_planned_loss_fraction": "0.01",
+    "daily_loss_stop_fraction": "0.01",
+    "cumulative_loss_stop_fraction": "0.05",
+    "risk_day_timezone": "Asia/Seoul",
+    "risk_day_start": "07:00"
+  },
+  "session_allocations": {
+    "KR": {
+      "targets": [
+        {
+          "symbol": "000660",
+          "name": "SK하이닉스",
+          "group": "semiconductor",
+          "exchange": "XKRX",
+          "currency": "KRW",
+          "max_budget_fraction": "0.25",
+          "weight_requires_signal_and_gates": true
+        },
+        {
+          "symbol": "005380",
+          "name": "현대차",
+          "group": "auto",
+          "exchange": "XKRX",
+          "currency": "KRW",
+          "max_budget_fraction": "0.25",
+          "weight_requires_signal_and_gates": true
+        }
+      ],
+      "inactive_currency_cash_fraction": "0.50",
+      "flatten_by": "local_regular_session_close",
+      "other_market_must_be_flat": true
+    },
+    "US": {
+      "targets": [
+        {
+          "symbol": "NVDA",
+          "name": "NVIDIA",
+          "group": "technology",
+          "exchange": "XNAS",
+          "currency": "USD",
+          "max_budget_fraction": "0.25",
+          "weight_requires_signal_and_gates": true
+        },
+        {
+          "symbol": "AMZN",
+          "name": "Amazon",
+          "group": "consumer",
+          "exchange": "XNAS",
+          "currency": "USD",
+          "max_budget_fraction": "0.25",
+          "weight_requires_signal_and_gates": true
+        }
+      ],
+      "inactive_currency_cash_fraction": "0.50",
+      "flatten_by": "local_regular_session_close",
+      "other_market_must_be_flat": true
+    }
+  },
+  "initial_holdings": [],
+  "initial_stock_weight": "0",
+  "initial_cash_weight": "1",
+  "benchmark_symbols": {
+    "KR": "069500",
+    "US": "SPY"
+  },
+  "sizing": "integer shares, minimum of slot/trade risk/currency settled cash/remaining daily risk; zero if one share exceeds any cap",
+  "rules": {
+    "universe": "manual 8-per-market research coverage of groups, not marketwide screen",
+    "window": "last61 benchmark observed sessions through asof within2026-08-01..2026-11-12",
+    "ranking": "descending last20 median(raw close * raw volume), symbol tie-break",
+    "returns": "60 daily provider-adjusted close simple returns",
+    "correlation": "Pearson on aligned60 returns; abs correlation <0.8, different concentration groups",
+    "max_slots": 2,
+    "slot_budget_fraction": "0.25",
+    "market_cash_fraction": "0.50",
+    "min_initial_cash_fraction": "0.50",
+    "allocation_method": "equal slots with integer share and cash/risk caps; not mean-return optimization",
+    "admission": "full61dates validOHLC positivevolume, finite nonzero returnvariance, otherwiseexclude",
+    "limits": "existing30%pername60%gross0.5%trade1%daily5%cumulative; v1tightensslot25%gross50%",
+    "future_validation": "no backdating this universe; next complete sessions after freeze, target start2026-11-16; no restart of old holdout"
+  },
+  "validation_start_not_before": "2026-11-16",
+  "data_checks_pending": [
+    "current FX and FX cost",
+    "bid ask spread and depth",
+    "current suspension and earnings/events",
+    "minute data coverage for added names",
+    "shared cash settlement and mark-to-market ledger"
+  ],
+  "account_portfolio_return": "NOT_RUN",
+  "p3_acceptance": "BLOCKED",
+  "p5": "NOT_STARTED",
+  "sizing_example": {
+    "initial_capital_krw": "10000000",
+    "price_date": "2026-11-12",
+    "fx_krw_per_usd": "1361.89",
+    "fx_date": "2026-11-06",
+    "fx_source": "https://fred.stlouisfed.org/series/DEXKOUS",
+    "cost_assumptions": "buy12.5bps sell12.5bps; no actual FX conversion cost; pre-funded currencies",
+    "KR_zero_prior_loss": {
+      "positions": [
+        {
+          "symbol": "000660",
+          "reference_price": "1254000",
+          "currency": "KRW",
+          "shares": 1,
+          "notional_krw": "1254000",
+          "buy_cost_krw": "1567.50000",
+          "planned_stop_loss_with_cost_krw": "15659.3250000"
+        },
+        {
+          "symbol": "005380",
+          "reference_price": "266500",
+          "currency": "KRW",
+          "shares": 9,
+          "notional_krw": "2398500",
+          "buy_cost_krw": "2998.12500",
+          "planned_stop_loss_with_cost_krw": "29951.2687500"
+        }
+      ],
+      "total_stock_value_krw": "3652500",
+      "total_buy_cost_krw": "4565.62500",
+      "cash_krw_equivalent_after_buy": "6342934.37500",
+      "planned_stop_loss_krw": "45610.5937500",
+      "prior_daily_loss_krw": "0"
+    },
+    "US_zero_prior_loss": {
+      "positions": [
+        {
+          "symbol": "NVDA",
+          "reference_price": "166.19",
+          "currency": "USD",
+          "shares": 11,
+          "notional_krw": "2489657.4901",
+          "buy_cost_krw": "3112.071862625",
+          "planned_stop_loss_with_cost_krw": "31089.59790762375"
+        },
+        {
+          "symbol": "AMZN",
+          "reference_price": "267.44",
+          "currency": "USD",
+          "shares": 6,
+          "notional_krw": "2185343.1696",
+          "buy_cost_krw": "2731.678962000",
+          "planned_stop_loss_with_cost_krw": "27289.47283038000"
+        }
+      ],
+      "total_stock_value_krw": "4675000.6597",
+      "total_buy_cost_krw": "5843.750824625",
+      "cash_krw_equivalent_after_buy": "5319155.589475375",
+      "planned_stop_loss_krw": "58379.07073800375",
+      "prior_daily_loss_krw": "0"
+    },
+    "US_after_KR_planned_stops": {
+      "positions": [
+        {
+          "symbol": "NVDA",
+          "reference_price": "166.19",
+          "currency": "USD",
+          "shares": 11,
+          "notional_krw": "2489657.4901",
+          "buy_cost_krw": "3112.071862625",
+          "planned_stop_loss_with_cost_krw": "31089.59790762375"
+        },
+        {
+          "symbol": "AMZN",
+          "reference_price": "267.44",
+          "currency": "USD",
+          "shares": 5,
+          "notional_krw": "1821119.3080",
+          "buy_cost_krw": "2276.399135000",
+          "planned_stop_loss_with_cost_krw": "22741.22735865000"
+        }
+      ],
+      "total_stock_value_krw": "4310776.7981",
+      "total_buy_cost_krw": "5388.470997625",
+      "cash_krw_equivalent_after_buy": "5638224.137152375",
+      "planned_stop_loss_krw": "53830.82526627375",
+      "prior_daily_loss_krw": "45610.5937500"
+    },
+    "status": "REFERENCE_ONLY_NOT_EXECUTABLE"
+  }
+}
