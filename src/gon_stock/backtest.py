@@ -35,6 +35,26 @@ def _sessions(calendar, exchange):
     return result
 
 
+def _signal_strength(prices, reference, volume):
+    relative = prices[-1] / prices[0] - reference[-1] / reference[0]
+    mean_volume = sum(volume[:-1]) / 20
+    if relative < Decimal('.001') or mean_volume == 0 or volume[-1] < mean_volume * Decimal('1.5'):
+        return None
+    return 'strong' if relative >= Decimal('.005') else 'weak'
+
+
+def _bar_exit(data, stop, target, expired):
+    if data['open'] <= stop:
+        return 'stop', data['open']
+    if data['low'] <= stop:
+        return 'stop', stop
+    if data['high'] >= target:
+        return 'target', target
+    if expired:
+        return 'time', data['close']
+    return None, None
+
+
 def _outcome(outcomes, entry_at, closed, costs):
     first = outcomes.get(entry_at)
     if first is None:
@@ -48,15 +68,7 @@ def _outcome(outcomes, entry_at, closed, costs):
         if row is None:
             return None
         data = {key: Decimal(value) for key, value in row['data'].items()}
-        reason, price = None, None
-        if data['open'] <= stop:
-            reason, price = 'stop', data['open']
-        elif data['low'] <= stop:
-            reason, price = 'stop', stop
-        elif data['high'] >= target:
-            reason, price = 'target', target
-        elif current + MINUTE == deadline:
-            reason, price = 'time', data['close']
+        reason, price = _bar_exit(data, stop, target, current + MINUTE == deadline)
         if reason:
             gross = price / entry - 1
             cost = roundtrip_cost(costs, price / entry)
@@ -161,13 +173,8 @@ def backtest(rows, calendar, universe, benchmark, costs, *, historical_delay_sec
             prices = [Decimal(known[key][time]['data']['close']) for time in times]
             reference = [Decimal(known[benchmark_key][time]['data']['close']) for time in times]
             volume = [Decimal(known[key][time]['data']['volume']) for time in times]
-            relative = prices[-1] / prices[0] - reference[-1] / reference[0]
-            mean_volume = sum(volume[:-1]) / 20
-            if (
-                relative < Decimal('.001')
-                or mean_volume == 0
-                or volume[-1] < mean_volume * Decimal('1.5')
-            ):
+            strength = _signal_strength(prices, reference, volume)
+            if strength is None:
                 continue
             entry_at = received.replace(second=0, microsecond=0) + MINUTE
             if entry_at >= closed:
@@ -185,7 +192,7 @@ def backtest(rows, calendar, universe, benchmark, costs, *, historical_delay_sec
                     'instrument': known[key][latest]['instrument'],
                     'decision_at': received.isoformat(),
                     'signal_bar_at': latest.isoformat(),
-                    'strength': 'strong' if relative >= Decimal('.005') else 'weak',
+                    'strength': strength,
                     **outcome,
                 }
             )

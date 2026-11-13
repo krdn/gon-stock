@@ -12,7 +12,7 @@
 - [GitHub 운영](.github/project-management.md)
 - [현재 상태](docs/STATE.md)
 - [과거 분봉 분석 결과와 한계](docs/evidence/P3/historical-analysis.md) · [미국 Alpaca 120일 분석](docs/evidence/P3/alpaca-analysis.md)
-- [당일 청산 포트폴리오 v1](docs/plans/intraday-portfolio-v1.md) · [종목 선별 근거](docs/evidence/P3/portfolio-selection.md) · [가상원장 검증](docs/evidence/P3/portfolio-ledger.md)
+- [당일 청산 포트폴리오 v1](docs/plans/intraday-portfolio-v1.md) · [종목 선별 근거](docs/evidence/P3/portfolio-selection.md) · [가상원장 검증](docs/evidence/P3/portfolio-ledger.md) · [선정 종목 과거 재생](docs/evidence/P3/portfolio-history.md)
 - [P3 평가 계약](docs/plans/p3-evaluation.md) · [연구·미래 수집 실행](docs/operations/p3-research.md)
 - [P4 연구 작업대·Buzz 연결](docs/operations/p4-workbench.md)
 

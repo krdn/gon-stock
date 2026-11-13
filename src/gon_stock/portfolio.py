@@ -116,74 +116,89 @@ def _money(value, *, zero=False):
     return number
 
 
-def replay_ledger(events, *, capital, initial_fx):
-    from datetime import timedelta
-    from zoneinfo import ZoneInfo
+class PortfolioLedger:
+    def __init__(self, *, capital, initial_fx):
+        self._base, first_fx = _money(capital), _money(initial_fx)
+        self._cash = {'KRW': self._base / 2, 'USD': self._base / 2 / first_fx}
+        self._currencies = {'000660': 'KRW', '005380': 'KRW', 'NVDA': 'USD', 'AMZN': 'USD'}
+        self._positions, self._pending = {}, []
+        self._previous = self._day = None
+        self._day_nav = self._base
+        self._daily_stop = self._total_stop = self._failed = False
 
-    from gon_stock.event_store import utc
+    def apply(self, event):
+        if self._failed:
+            raise ValueError('ledger_failed')
+        try:
+            return self._apply(event)
+        except (ValueError, KeyError, TypeError, ArithmeticError, AttributeError):
+            self._failed = True
+            raise
 
-    base, first_fx = _money(capital), _money(initial_fx)
-    cash = {'KRW': base / 2, 'USD': base / 2 / first_fx}
-    currencies = {'000660': 'KRW', '005380': 'KRW', 'NVDA': 'USD', 'AMZN': 'USD'}
-    positions, pending, results = {}, [], []
-    previous = day = None
-    day_nav = base
-    daily_stop = total_stop = False
-    for event in events:
+    def _apply(self, event):
+        from datetime import timedelta
+        from zoneinfo import ZoneInfo
+
+        from gon_stock.event_store import utc
+
         at = utc(event['at'])
-        if previous is not None and at < previous:
+        if self._previous is not None and at < self._previous:
             raise ValueError('event_order')
         fx = _money(event['fx'])
         rates = {'KRW': Decimal(1), 'USD': fx}
         marks = {symbol: _money(price) for symbol, price in event['marks'].items()}
-        if not positions.keys() <= marks.keys():
+        if not self._positions.keys() <= marks.keys():
             raise ValueError('missing_mark')
         local = at.astimezone(ZoneInfo('Asia/Seoul'))
         risk_day = (local - timedelta(hours=7)).date()
         action = event['action']
         if action not in {'mark', 'buy', 'sell'}:
             raise ValueError('invalid_action')
-        if day is not None and risk_day != day:
+        if self._day is not None and risk_day != self._day:
             if local.hour != 7 or local.minute or local.second or local.microsecond:
                 raise ValueError('risk_day_boundary_required')
-            if action != 'mark' or (risk_day - day).days != 1:
+            if action != 'mark' or (risk_day - self._day).days != 1:
                 raise ValueError('risk_day_boundary_required')
-        for item in pending[:]:
+        for item in self._pending[:]:
             if item['at'] <= at:
-                cash[item['currency']] += item['amount']
-                pending.remove(item)
+                self._cash[item['currency']] += item['amount']
+                self._pending.remove(item)
 
-        def nav(rates=rates, marks=marks):
+        def nav():
             return (
-                sum(value * rates[currency] for currency, value in cash.items())
-                + sum(item['amount'] * rates[item['currency']] for item in pending)
-                + sum(p['quantity'] * marks[s] * rates[p['currency']] for s, p in positions.items())
+                sum(value * rates[currency] for currency, value in self._cash.items())
+                + sum(item['amount'] * rates[item['currency']] for item in self._pending)
+                + sum(
+                    p['quantity'] * marks[s] * rates[p['currency']]
+                    for s, p in self._positions.items()
+                )
             )
 
         before = nav()
-        if day is not None and risk_day != day:
-            day_nav, daily_stop = before, False
-        day = risk_day
-        daily_stop |= day_nav - before >= base * Decimal('.01')
-        total_stop |= base - before >= base * Decimal('.05')
+        if self._day is not None and risk_day != self._day:
+            self._day_nav, self._daily_stop = before, False
+        self._day = risk_day
+        self._daily_stop |= self._day_nav - before >= self._base * Decimal('.01')
+        self._total_stop |= self._base - before >= self._base * Decimal('.05')
 
-        def remaining_risk(rates=rates, marks=marks, day_nav=day_nav, nav=nav):
+        def remaining_risk():
             residual = sum(
                 p['quantity']
                 * max(Decimal(0), marks[s] - p['stop'] * (1 - p['sell_rate']))
                 * rates[p['currency']]
-                for s, p in positions.items()
+                for s, p in self._positions.items()
             )
             return max(
-                Decimal(0), base * Decimal('.01') - max(Decimal(0), day_nav - nav()) - residual
+                Decimal(0),
+                self._base * Decimal('.01') - max(Decimal(0), self._day_nav - nav()) - residual,
             )
 
         quantity, reason = 0, 'marked'
         if action in {'buy', 'sell'}:
             symbol = event['symbol']
-            if symbol not in currencies or symbol not in marks:
+            if symbol not in self._currencies or symbol not in marks:
                 raise ValueError('invalid_symbol_or_mark')
-            currency = currencies[symbol]
+            currency = self._currencies[symbol]
             rate, price = rates[currency], _money(event['price'])
             if price != marks[symbol]:
                 raise ValueError('fill_mark_mismatch')
@@ -196,41 +211,45 @@ def replay_ledger(events, *, capital, initial_fx):
                 unit_cash = price * (1 + buy_rate)
                 unit_risk = (unit_cash - stop * (1 - sell_rate)) * rate
                 gross = sum(
-                    p['quantity'] * marks[s] * rates[p['currency']] for s, p in positions.items()
+                    p['quantity'] * marks[s] * rates[p['currency']]
+                    for s, p in self._positions.items()
                 )
                 committed = sum(
                     p['quantity'] * p['unit_cash'] * rates[p['currency']]
-                    for p in positions.values()
+                    for p in self._positions.values()
                 )
                 if event.get('gates') is not True:
                     reason = 'gates_unverified'
-                elif daily_stop or total_stop:
+                elif self._daily_stop or self._total_stop:
                     reason = 'loss_stop'
-                elif any(p['currency'] != currency for p in positions.values()):
+                elif any(p['currency'] != currency for p in self._positions.values()):
                     reason = 'other_market_open'
-                elif len(positions) >= 2 or symbol in positions:
+                elif len(self._positions) >= 2 or symbol in self._positions:
                     reason = 'position_limit'
-                elif any(at - p['opened'] >= timedelta(minutes=30) for p in positions.values()):
+                elif any(
+                    at - p['opened'] >= timedelta(minutes=30) for p in self._positions.values()
+                ):
                     reason = 'overdue_position'
                 else:
                     quantity = max(
                         0,
                         int(
                             min(
-                                base * Decimal('.25') / (unit_cash * rate),
-                                max(Decimal(0), base * Decimal('.50') - committed)
+                                self._base * Decimal('.25') / (unit_cash * rate),
+                                max(Decimal(0), self._base * Decimal('.50') - committed)
                                 / (unit_cash * rate),
-                                max(Decimal(0), base * Decimal('.60') - gross) / (price * rate),
-                                base * Decimal('.005') / unit_risk,
+                                max(Decimal(0), self._base * Decimal('.60') - gross)
+                                / (price * rate),
+                                self._base * Decimal('.005') / unit_risk,
                                 remaining_risk() / unit_risk,
-                                cash[currency] / unit_cash,
+                                self._cash[currency] / unit_cash,
                             )
                         ),
                     )
                     reason = 'filled' if quantity else 'budget_or_cash'
                     if quantity:
-                        cash[currency] -= quantity * unit_cash
-                        positions[symbol] = dict(
+                        self._cash[currency] -= quantity * unit_cash
+                        self._positions[symbol] = dict(
                             quantity=quantity,
                             currency=currency,
                             stop=stop,
@@ -239,14 +258,14 @@ def replay_ledger(events, *, capital, initial_fx):
                             opened=at,
                         )
             else:
-                if symbol not in positions:
+                if symbol not in self._positions:
                     raise ValueError('no_position')
                 settlement = utc(event['settlement_at'])
                 if settlement <= at:
                     raise ValueError('settlement_must_be_future')
-                p = positions.pop(symbol)
+                p = self._positions.pop(symbol)
                 quantity = p['quantity']
-                pending.append(
+                self._pending.append(
                     dict(
                         currency=currency,
                         amount=quantity * price * (1 - p['sell_rate']),
@@ -255,29 +274,32 @@ def replay_ledger(events, *, capital, initial_fx):
                 )
                 reason = 'sold_unsettled'
         value = nav()
-        daily_stop |= day_nav - value >= base * Decimal('.01')
-        total_stop |= base - value >= base * Decimal('.05')
-        results.append(
-            dict(
-                at=at.isoformat(),
-                action=action,
-                quantity=quantity,
-                reason=reason,
-                nav=str(value),
-                return_=str(value / base - 1),
-                daily_return=str(value / day_nav - 1) if day_nav > 0 else None,
-                cash={c: str(v) for c, v in cash.items()},
-                receivables={
-                    c: str(sum((p['amount'] for p in pending if p['currency'] == c), Decimal(0)))
-                    for c in cash
-                },
-                positions={s: p['quantity'] for s, p in positions.items()},
-                remaining_risk=str(remaining_risk()),
-                daily_stop=daily_stop,
-                total_stop=total_stop,
-                unclosed=list(positions),
-            )
+        self._daily_stop |= self._day_nav - value >= self._base * Decimal('.01')
+        self._total_stop |= self._base - value >= self._base * Decimal('.05')
+        result = dict(
+            at=at.isoformat(),
+            action=action,
+            quantity=quantity,
+            reason=reason,
+            nav=str(value),
+            return_=str(value / self._base - 1),
+            daily_return=str(value / self._day_nav - 1) if self._day_nav > 0 else None,
+            cash={c: str(v) for c, v in self._cash.items()},
+            receivables={
+                c: str(sum((p['amount'] for p in self._pending if p['currency'] == c), Decimal(0)))
+                for c in self._cash
+            },
+            positions={s: p['quantity'] for s, p in self._positions.items()},
+            remaining_risk=str(remaining_risk()),
+            daily_stop=self._daily_stop,
+            total_stop=self._total_stop,
+            unclosed=list(self._positions),
         )
-        results[-1]['return'] = results[-1].pop('return_')
-        previous = at
-    return results
+        result['return'] = result.pop('return_')
+        self._previous = at
+        return result
+
+
+def replay_ledger(events, *, capital, initial_fx):
+    ledger = PortfolioLedger(capital=capital, initial_fx=initial_fx)
+    return [ledger.apply(event) for event in events]

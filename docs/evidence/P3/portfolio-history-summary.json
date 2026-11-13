@@ -1,0 +1,294 @@
+{
+  "plan_sha256": "efb296119a164ef158eab238ea571fb049f675f5dc395204508dbb312bdb7c8c",
+  "markets_replayed": [
+    "XNAS"
+  ],
+  "XKRX": {
+    "status": "NOT_RUN",
+    "reason": "incomplete_history; auction/halt schedule unsupported"
+  },
+  "scenarios": {
+    "0": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9948453.280634000000000000000",
+        "max_drawdown": "0.0082954004159374170283050940",
+        "filled_entries": 33,
+        "rejected_entries": 1018,
+        "rejection_reasons": {
+          "position_limit": 52,
+          "budget_or_cash": 966
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "5000000",
+          "USD": "56.695865881972846558826337"
+        },
+        "receivables": {
+          "KRW": "0",
+          "USD": "3576.8232"
+        },
+        "return": "-0.005154671936600000000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XNAS": {
+          "symbol": "SPY",
+          "quantity": 4,
+          "ending_nav": "9977665.0040",
+          "entry_at": "2026-09-18T13:30:00+00:00",
+          "exit_at": "2026-11-12T21:00:00+00:00",
+          "entry_price": "761.31",
+          "exit_price": "757.21",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.0022334996"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "output_sha256": "a84f35c24e1eac9ad4b595fa62045f4291f831866d723be2142c9c67082165ec"
+    },
+    "25": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9782283.275145748750000000000",
+        "max_drawdown": "0.021946433614950125000",
+        "filled_entries": 33,
+        "rejected_entries": 1018,
+        "rejection_reasons": {
+          "position_limit": 52,
+          "budget_or_cash": 966
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "5000000",
+          "USD": "41.086254756972846558826337"
+        },
+        "receivables": {
+          "KRW": "0",
+          "USD": "3470.418547500"
+        },
+        "return": "-0.021771672485425125000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XNAS": {
+          "symbol": "SPY",
+          "quantity": 4,
+          "ending_nav": "9967324.717986000",
+          "entry_at": "2026-09-18T13:30:00+00:00",
+          "exit_at": "2026-11-12T21:00:00+00:00",
+          "entry_price": "761.31",
+          "exit_price": "757.21",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.0032675282014"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "output_sha256": "19914fa7dc7a3c820533e0e013b008ef95d6290b754707049f851a9cbf6f22d6"
+    },
+    "50": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9625449.687145565000000000000",
+        "max_drawdown": "0.037601631934493500000",
+        "filled_entries": 31,
+        "rejected_entries": 1020,
+        "rejection_reasons": {
+          "position_limit": 54,
+          "budget_or_cash": 966
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "5000000",
+          "USD": "97.101607381972846558826337"
+        },
+        "receivables": {
+          "KRW": "0",
+          "USD": "3299.24441700"
+        },
+        "return": "-0.037455031285443500000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XNAS": {
+          "symbol": "SPY",
+          "quantity": 4,
+          "ending_nav": "9956984.43197200",
+          "entry_at": "2026-09-18T13:30:00+00:00",
+          "exit_at": "2026-11-12T21:00:00+00:00",
+          "entry_price": "761.31",
+          "exit_price": "757.21",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.0043015568028"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "output_sha256": "d48627e6457e7ca63b5b241d1a63ebcbe9da10780ef6e1bd08312fdd3c3ce676"
+    },
+    "75": {
+      "summary": {
+        "starting_nav": "10000000",
+        "ending_nav": "9496691.641435097500000000000",
+        "max_drawdown": "0.050330835856490250000",
+        "filled_entries": 28,
+        "rejected_entries": 1023,
+        "rejection_reasons": {
+          "position_limit": 48,
+          "budget_or_cash": 960,
+          "loss_stop": 15
+        },
+        "unclosed": [],
+        "cash": {
+          "KRW": "5000000",
+          "USD": "1512.992465631972846558826337"
+        },
+        "receivables": {
+          "KRW": "0",
+          "USD": "1788.809913000"
+        },
+        "return": "-0.050330835856490250000"
+      },
+      "references": {
+        "cash": {
+          "ending_nav": "10000000",
+          "return": "0",
+          "fx_mode": "fixed_reference"
+        },
+        "XNAS": {
+          "symbol": "SPY",
+          "quantity": 4,
+          "ending_nav": "9946644.145958000",
+          "entry_at": "2026-09-18T13:30:00+00:00",
+          "exit_at": "2026-11-12T21:00:00+00:00",
+          "entry_price": "761.31",
+          "exit_price": "757.21",
+          "mode": "50_percent_budget_buy_hold_plus_cash_no_risk_stops",
+          "return": "-0.0053355854042"
+        }
+      },
+      "assumptions": {
+        "out_of_sample": false,
+        "settlement": "supplied_unverified_schedule",
+        "execution": "immediate_full_fill_assumed_gates",
+        "order_state": "entry_time_after_same_time_exits",
+        "signal_priority": "symbol_alphabetical",
+        "market_key": "US_session_group_not_listing_exchange"
+      },
+      "output_sha256": "d634323a59d7347e2cf195b02ef1dc0ffd593edb63043c0af52ba41ca448023c"
+    }
+  },
+  "crosscheck": {
+    "0": {
+      "status": "PASS",
+      "entries_by_symbol": {
+        "NVDA": 14,
+        "AMZN": 19
+      },
+      "realized_pnl_krw": "-51546.719366",
+      "daily_points": 56,
+      "output_sha256": "a84f35c24e1eac9ad4b595fa62045f4291f831866d723be2142c9c67082165ec"
+    },
+    "25": {
+      "status": "PASS",
+      "entries_by_symbol": {
+        "NVDA": 14,
+        "AMZN": 19
+      },
+      "realized_pnl_krw": "-217716.72485425125",
+      "daily_points": 56,
+      "output_sha256": "19914fa7dc7a3c820533e0e013b008ef95d6290b754707049f851a9cbf6f22d6"
+    },
+    "50": {
+      "status": "PASS",
+      "entries_by_symbol": {
+        "NVDA": 14,
+        "AMZN": 17
+      },
+      "realized_pnl_krw": "-374550.3128544350",
+      "daily_points": 56,
+      "output_sha256": "d48627e6457e7ca63b5b241d1a63ebcbe9da10780ef6e1bd08312fdd3c3ce676"
+    },
+    "75": {
+      "status": "PASS",
+      "entries_by_symbol": {
+        "NVDA": 12,
+        "AMZN": 16
+      },
+      "realized_pnl_krw": "-503308.35856490250",
+      "daily_points": 56,
+      "output_sha256": "d634323a59d7347e2cf195b02ef1dc0ffd593edb63043c0af52ba41ca448023c"
+    }
+  },
+  "provenance": {
+    "plan-v2.json": "efb296119a164ef158eab238ea571fb049f675f5dc395204508dbb312bdb7c8c",
+    "quality.json": "c4c38a1c3e1b01f78a9397cb3f88aa21303d521b22c473a22df70a7ab7f2f56c",
+    "XNAS-regular.jsonl.gz": "9b6637b2639443c7368db5b36c472be0b67100586a198233e67ae1d28b4b1cb0",
+    "XKRX-regular.jsonl.gz": "dfef7eed950568561b8dc5a58e64ec53fdb04377d20f48aec6b20040c0289b01",
+    "settlements.json": "208b2e02d4c622340254ef0f9c5286ecb0241d873f25eb121fabb9068e7bbffb",
+    "analyze.py": "bece5fb06b7f32940b919226864bfae9723fbc5f4199555d4b5a42f77d16d468",
+    "crosscheck.py": "16624382c276d1bd0e8baad8c990c362d9531d4ee3615f5d71659c7f305d19d0",
+    "validated-replay/settlements.json": "208b2e02d4c622340254ef0f9c5286ecb0241d873f25eb121fabb9068e7bbffb",
+    "validated-replay/results-summary.json": "f55a2c57e9da0e778e897ea4cd614ba5c639e8abd931af773c3db45b77807521"
+  },
+  "limitations": [
+    "EXPLORATORY_ONLY",
+    "current_selected_universe",
+    "holdout_reuse",
+    "fixed_fx",
+    "assumed_80s_availability",
+    "unverified_cost_settlement",
+    "XKRX_NOT_RUN",
+    "P3_BLOCKED_P5_NOT_STARTED"
+  ],
+  "base_sha": "2a91d0e959978ab794e3c69062aaed1fcef19de0",
+  "source_hashes": {
+    "src/gon_stock/portfolio.py": "443f4314c1d3f0eed64b05517ea66bbf6ff2a82eafc58a417229d260eb548b30",
+    "src/gon_stock/portfolio_history.py": "3f8c263170f65f57f9b837ea11b8e1ab9432f17e52afb3049b35a114c8f5103f",
+    "src/gon_stock/backtest.py": "26e303e65fc165c92cd31082eaaf240bfe6195b8fb083a6a7489a7d2aac95ee4",
+    ".private/portfolio-history-20261113/analyze.py": "bece5fb06b7f32940b919226864bfae9723fbc5f4199555d4b5a42f77d16d468"
+  },
+  "reproduction": "Original summaries and references unchanged after metadata-only replay; not independent OOS",
+  "validation": {
+    "tests_passed": 278,
+    "review_requested": "claude-fable-5-2 high",
+    "review_returned": "claude-fable-5-2",
+    "provider": "firstParty",
+    "initial": "PASS",
+    "delta": "PASS",
+    "P3_acceptance": "BLOCKED",
+    "P5": "NOT_STARTED"
+  }
+}
