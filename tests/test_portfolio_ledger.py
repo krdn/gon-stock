@@ -270,3 +270,16 @@ def test_nonterminating_initial_fx_nav_precision():
     e['fx'] = '1361.89'
     result = portfolio.replay_ledger([e], capital='10000000', initial_fx='1361.89')
     assert abs(D(result[0]['nav']) - D('10000000')) < D('1e-15')
+
+
+def test_incremental_ledger_matches_batch_and_stops_after_invalid_event():
+    cls = getattr(portfolio, 'PortfolioLedger', None)
+    assert cls is not None, 'incremental ledger required for historical execution feedback'
+    ledger = cls(capital='10000000', initial_fx='1000')
+    assert ledger.apply(buy()) == run([buy()])[0]
+    invalid = event()
+    invalid['marks'] = {}
+    with pytest.raises(ValueError, match='missing_mark'):
+        ledger.apply(invalid)
+    with pytest.raises(ValueError, match='ledger_failed'):
+        ledger.apply(event())
